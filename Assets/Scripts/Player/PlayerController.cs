@@ -27,6 +27,7 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody2D rb;
     private Animator animator;
+    private AudioManager audioManager;
 
     private bool isGrounded;
     private bool isTouchingWall;
@@ -39,7 +40,9 @@ public class PlayerController : MonoBehaviour
 
     // DOUBLE JUMP
     private int jumpCount = 0;
-    [SerializeField] private int maxJumps = 2;
+    [SerializeField] private int maxJumps = 1;
+
+    
 
     private void Awake()
     {
@@ -89,14 +92,22 @@ public class PlayerController : MonoBehaviour
     private void HandleJump()
     {
         if (!Input.GetButtonDown("Jump"))
+            
             return;
 
         if (isGrounded)
             jumpCount = 0;
+        {
+            //audioManager.PlayJumpSound();
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+            wasWallJumping = false;
+            return;
+        }
 
         // WALL JUMP
         if (isTouchingWall && canWallJump && !wasWallJumping)
         {
+            //audioManager.PlayJumpSound();
             canWallJump = false;
             wasWallJumping = true;
             wallJumpTimer = wallJumpCooldown;
@@ -121,9 +132,9 @@ public class PlayerController : MonoBehaviour
 
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
 
-            if (jumpCount == 1)
+            if (jumpCount == 0)
                 animator.Play("PlayerJump");
-            else if (jumpCount == 2)
+            else if (jumpCount == 1)
                 animator.Play("PlayerDoubleJump");
         }
     }
