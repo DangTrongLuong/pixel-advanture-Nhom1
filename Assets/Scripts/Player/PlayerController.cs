@@ -27,6 +27,7 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody2D rb;
     private Animator animator;
+    private AudioManager audioManager;
 
     private bool isGrounded;
     private bool isTouchingWall;
@@ -36,6 +37,8 @@ public class PlayerController : MonoBehaviour
 
     private float moveInput;
     private float wallJumpTimer = 0f;
+
+    
 
     private void Awake()
     {
@@ -88,11 +91,13 @@ public class PlayerController : MonoBehaviour
     private void HandleJump()
     {
         if (!Input.GetButtonDown("Jump"))
+            
             return;
 
         // Jump bình thường
         if (isGrounded)
         {
+            //audioManager.PlayJumpSound();
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
             wasWallJumping = false;
             return;
@@ -101,6 +106,7 @@ public class PlayerController : MonoBehaviour
         // WALL JUMP
         if (isTouchingWall && canWallJump && !wasWallJumping)
         {
+            //audioManager.PlayJumpSound();
             canWallJump = false;
             wasWallJumping = true;
             wallJumpTimer = wallJumpCooldown;
