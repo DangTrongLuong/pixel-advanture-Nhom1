@@ -37,6 +37,10 @@ public class PlayerController : MonoBehaviour
     private float moveInput;
     private float wallJumpTimer = 0f;
 
+    // DOUBLE JUMP
+    private int jumpCount = 0;
+    [SerializeField] private int maxJumps = 2;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -66,20 +70,17 @@ public class PlayerController : MonoBehaviour
 
     private void HandleMovement()
     {
-        // Nếu đang dính tường và đè vào tường → không được di chuyển vào
         if (isTouchingWall && !isGrounded && moveInput != 0 && Mathf.Sign(moveInput) == transform.localScale.x)
         {
             rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
             return;
         }
 
-        // Trong thời gian wall jump cooldown → không override tốc độ
         if (wallJumpTimer > 0)
             return;
 
         rb.linearVelocity = new Vector2(moveInput * moveSpeed, rb.linearVelocity.y);
 
-        // Flip
         if (moveInput > 0) transform.localScale = Vector3.one;
         else if (moveInput < 0) transform.localScale = new Vector3(-1, 1, 1);
     }
@@ -90,13 +91,8 @@ public class PlayerController : MonoBehaviour
         if (!Input.GetButtonDown("Jump"))
             return;
 
-        // Jump bình thường
         if (isGrounded)
-        {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
-            wasWallJumping = false;
-            return;
-        }
+            jumpCount = 0;
 
         // WALL JUMP
         if (isTouchingWall && canWallJump && !wasWallJumping)
@@ -106,16 +102,29 @@ public class PlayerController : MonoBehaviour
             wallJumpTimer = wallJumpCooldown;
 
             float dir = -transform.localScale.x;
-
-            // Flip hướng
             transform.localScale = new Vector3(dir, 1, 1);
 
             rb.linearVelocity = new Vector2(
                 dir * wallJumpHorizontalForce,
                 wallJumpForce
             );
+            jumpCount = 1;
+            animator.Play("PlayerJump");
 
             StartCoroutine(WallJumpCooldown());
+            return;
+        }
+
+        if (jumpCount < maxJumps && !isTouchingWall)
+        {
+            jumpCount++;
+
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+
+            if (jumpCount == 1)
+                animator.Play("PlayerJump");
+            else if (jumpCount == 2)
+                animator.Play("PlayerDoubleJump");
         }
     }
 
@@ -136,9 +145,14 @@ public class PlayerController : MonoBehaviour
             groundLayer
         );
 
-        if (isGrounded && !wasGroundedState)
+        if (isGrounded)
         {
             wasWallJumping = false;
+            jumpCount = 0;
+            animator.SetInteger("jumpCount", 0);
+
+            if (!wasGroundedState)
+                animator.Play("PlayerIdle");
         }
     }
 
@@ -154,8 +168,6 @@ public class PlayerController : MonoBehaviour
     private void CheckWall()
     {
         Vector2 dir = new Vector2(transform.localScale.x, 0);
-        bool previous = isTouchingWall;
-
         isTouchingWall = Physics2D.Raycast(
             wallCheck.position,
             dir,
@@ -163,10 +175,8 @@ public class PlayerController : MonoBehaviour
             wallLayer
         );
 
-        if (previous && !isTouchingWall)
-        {
+        if (!isTouchingWall)
             wasWallJumping = false;
-        }
     }
 
     // -------------------------------------------------------------
@@ -174,7 +184,6 @@ public class PlayerController : MonoBehaviour
     {
         if (isTouchingWall && !isGrounded && !wasWallJumping)
         {
-            // Tốc độ trượt luôn cố định
             if (rb.linearVelocity.y < wallSlideSpeed)
             {
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, wallSlideSpeed);
@@ -187,16 +196,13 @@ public class PlayerController : MonoBehaviour
     {
         float vy = rb.linearVelocity.y;
 
-        // Running
         animator.SetBool("isRunning", Mathf.Abs(moveInput) > 0.1f && isGrounded);
 
-        // Jumping
         animator.SetBool("isJumping", vy > 0.1f && !isGrounded);
 
-        // Falling
-        animator.SetBool("isFalling", vy < -0.1f && !isGrounded && !isTouchingWall);
+        animator.SetBool("isFalling", vy < -0.1f && !isGrounded);
 
-        // Wall Sliding
         animator.SetBool("isTouchingWall", isTouchingWall && !isGrounded);
+        animator.SetInteger("jumpCount", jumpCount);
     }
 }
