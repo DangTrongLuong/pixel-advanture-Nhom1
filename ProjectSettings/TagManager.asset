@@ -41,14 +41,14 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Player
+    uniqueID: 3247472677
+    locked: 0
   - name: Ground
     uniqueID: 3959453125
     locked: 0
   - name: Wall
     uniqueID: 3630797035
-    locked: 0
-  - name: Player
-    uniqueID: 3247472677
     locked: 0
   - name: New Layer 4
     uniqueID: 3241899995
