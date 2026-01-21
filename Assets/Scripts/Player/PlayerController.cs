@@ -116,7 +116,7 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        // NORMAL + DOUBLE JUMP
+        // NORMAL +git  DOUBLE JUMP
         if (jumpCount < maxJumps)
         {
             jumpCount++;
