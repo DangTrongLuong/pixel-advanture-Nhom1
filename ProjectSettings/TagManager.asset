@@ -3,7 +3,8 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - Items
   layers:
   - Default
   - TransparentFX
@@ -55,6 +56,12 @@ TagManager:
     locked: 0
   - name: Traps
     uniqueID: 2106854837
+    locked: 0
+  - name: Items
+    uniqueID: 2855478617
+    locked: 0
+  - name: UI
+    uniqueID: 2101276667
     locked: 0
   m_RenderingLayers:
   - Default
