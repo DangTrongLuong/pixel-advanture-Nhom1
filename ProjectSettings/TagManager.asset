@@ -13,7 +13,7 @@ TagManager:
   - UI
   - Wall
   - Ground
-  - 
+  - Traps
   - 
   - 
   - 
@@ -52,6 +52,9 @@ TagManager:
     locked: 0
   - name: Wall
     uniqueID: 3630797035
+    locked: 0
+  - name: Traps
+    uniqueID: 1999230219
     locked: 0
   m_RenderingLayers:
   - Default
