@@ -27,6 +27,7 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody2D rb;
     private Animator animator;
+    private GameManager gameManager;
 
     private bool isGrounded;
     private bool isTouchingWall;
@@ -37,14 +38,23 @@ public class PlayerController : MonoBehaviour
     private float moveInput;
     private float wallJumpTimer = 0f;
 
-    // DOUBLE JUMP
+    // DOUBLE JUMP FIXED
     private int jumpCount = 0;
-    [SerializeField] private int maxJumps = 2;
+    [SerializeField] private int maxJumps = 1; 
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        gameManager = FindAnyObjectByType<GameManager>();
+    }
+
+    private void Start()
+    {
+        if (gameManager != null)
+        {
+            gameManager.RandomPlayer();
+        }
     }
 
     private void Update()
@@ -61,6 +71,7 @@ public class PlayerController : MonoBehaviour
         if (wallJumpTimer > 0)
             wallJumpTimer -= Time.deltaTime;
     }
+
 
     // -------------------------------------------------------------
     private void ReadInput()
@@ -88,13 +99,14 @@ public class PlayerController : MonoBehaviour
     // -------------------------------------------------------------
     private void HandleJump()
     {
-        if (!Input.GetButtonDown("Jump"))
+        if (!(Input.GetButtonDown("Jump")
+          || Input.GetKeyDown(KeyCode.UpArrow)
+          || Input.GetKeyDown(KeyCode.W)))
             return;
 
-        if (isGrounded)
+        if (isGrounded && rb.linearVelocity.y <= 0.1f)
             jumpCount = 0;
 
-        // WALL JUMP
         if (isTouchingWall && canWallJump && !wasWallJumping)
         {
             canWallJump = false;
@@ -110,13 +122,14 @@ public class PlayerController : MonoBehaviour
             );
 
             jumpCount = 1;
+
             animator.Play("PlayerJump");
 
             StartCoroutine(WallJumpCooldown());
             return;
         }
 
-        // NORMAL +git  DOUBLE JUMP
+        // DOUBLE JUMP FIX
         if (jumpCount < maxJumps)
         {
             jumpCount++;
@@ -126,7 +139,7 @@ public class PlayerController : MonoBehaviour
             if (jumpCount == 1)
                 animator.Play("PlayerJump");
             else if (jumpCount == 2)
-                animator.Play("PlayerDoubleJump");
+                animator.Play("PlayerDubbleJump");
         }
     }
 
@@ -150,7 +163,11 @@ public class PlayerController : MonoBehaviour
         if (isGrounded)
         {
             wasWallJumping = false;
-            jumpCount = 0;
+
+            // RESET jumpCount đúng lúc
+            if (rb.linearVelocity.y <= 0.1f)
+                jumpCount = 0;
+
             animator.SetInteger("jumpCount", 0);
 
             if (!wasGroundedState)
@@ -169,6 +186,8 @@ public class PlayerController : MonoBehaviour
 
     private void CheckWall()
     {
+        bool wasWallBefore = isTouchingWall;
+
         Vector2 dir = new Vector2(transform.localScale.x, 0);
         isTouchingWall = Physics2D.Raycast(
             wallCheck.position,
@@ -178,7 +197,15 @@ public class PlayerController : MonoBehaviour
         );
 
         if (!isTouchingWall)
+        {
             wasWallJumping = false;
+
+            // FIX: Reset jumpCount khi bật ra khỏi tường
+            if (wasWallBefore && !isGrounded)
+            {
+                jumpCount = 0;
+            }
+        }
     }
 
     // -------------------------------------------------------------
