@@ -1,9 +1,5 @@
 fileFormatVersion: 2
-<<<<<<< HEAD
 guid: f159aec4ceae717418227601b3280ee0
-=======
-guid: ffbde3012d3336c42899cf804929ca76
->>>>>>> 69b3eadd35371ba94fbc3cd39ce0a6187a210732
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -55,11 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-<<<<<<< HEAD
-  spritePixelsToUnits: 16
-=======
   spritePixelsToUnits: 100
->>>>>>> 69b3eadd35371ba94fbc3cd39ce0a6187a210732
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -137,21 +129,12 @@ TextureImporter:
       name: Idle_0
       rect:
         serializedVersion: 2
-<<<<<<< HEAD
-        x: 0
-        y: 17
-        width: 16
-        height: 16
-      alignment: 3
-      pivot: {x: 1, y: 1}
-=======
         x: 4
         y: 4
         width: 34
         height: 34
       alignment: 0
       pivot: {x: 0, y: 0}
->>>>>>> 69b3eadd35371ba94fbc3cd39ce0a6187a210732
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -164,84 +147,11 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
-<<<<<<< HEAD
-    - serializedVersion: 2
-      name: Idle_1
-      rect:
-        serializedVersion: 2
-        x: 16
-        y: 17
-        width: 16
-        height: 16
-      alignment: 3
-      pivot: {x: 1, y: 1}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 353c52f1abc803b4eadd8cf8fe5ea625
-      internalID: 316469940
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle_2
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 1
-        width: 16
-        height: 16
-      alignment: 3
-      pivot: {x: 1, y: 1}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: aa3568e67c73fb9429900edd390d3303
-      internalID: -1804249212
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle_3
-      rect:
-        serializedVersion: 2
-        x: 16
-        y: 1
-        width: 16
-        height: 16
-      alignment: 3
-      pivot: {x: 1, y: 1}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 20001f293584c64489858dd78f3356d3
-      internalID: -2059077711
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-=======
->>>>>>> 69b3eadd35371ba94fbc3cd39ce0a6187a210732
     outline: []
     customData: 
     physicsShape: []
     bones: []
-<<<<<<< HEAD
-    spriteID: 3a006dc021963544eb140be93340ed91
-=======
     spriteID: 
->>>>>>> 69b3eadd35371ba94fbc3cd39ce0a6187a210732
     internalID: 0
     vertices: []
     indices: 
@@ -249,20 +159,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-<<<<<<< HEAD
-      entries:
-      - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":2.0,"y":2.0},"gridSpriteSize":{"x":16.0,"y":16.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":1.0,"y":1.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":3,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
-    nameFileIdTable:
-      Idle_0: 4723107735738678597
-      Idle_1: 316469940
-      Idle_2: -1804249212
-      Idle_3: -2059077711
-=======
       entries: []
     nameFileIdTable:
       Idle_0: 4723107735738678597
->>>>>>> 69b3eadd35371ba94fbc3cd39ce0a6187a210732
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
