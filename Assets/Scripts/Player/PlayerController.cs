@@ -49,13 +49,6 @@ public class PlayerController : MonoBehaviour
         gameManager = FindAnyObjectByType<GameManager>();
     }
 
-    private void Start()
-    {
-        if (gameManager != null)
-        {
-            gameManager.RandomPlayer();
-        }
-    }
 
     private void Update()
     {
