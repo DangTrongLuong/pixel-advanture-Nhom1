@@ -3,17 +3,18 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - Items
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Background
   - Water
   - UI
   - Wall
   - Ground
-  - 
+  - Traps
   - 
   - 
   - 
@@ -41,6 +42,9 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Background
+    uniqueID: 3241899995
+    locked: 0
   - name: Player
     uniqueID: 3247472677
     locked: 0
@@ -50,8 +54,14 @@ TagManager:
   - name: Wall
     uniqueID: 3630797035
     locked: 0
-  - name: New Layer 4
-    uniqueID: 3241899995
+  - name: Traps
+    uniqueID: 2106854837
+    locked: 0
+  - name: Items
+    uniqueID: 2855478617
+    locked: 0
+  - name: UI
+    uniqueID: 2101276667
     locked: 0
   m_RenderingLayers:
   - Default
