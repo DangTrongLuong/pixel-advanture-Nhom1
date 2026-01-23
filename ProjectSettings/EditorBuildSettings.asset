@@ -8,12 +8,57 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Welcome.unity
     guid: f649afcb0b4a8ef40817179cb651268e
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Game.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
   - enabled: 1
     path: Assets/Scenes/Map1.unity
     guid: 79c5d9f57b814d04db3afbcea5a2e438
+  - enabled: 1
+    path: Assets/Scenes/Map2.unity
+    guid: 31c6458c9fb984fd7a165681cb9ac52d
+  - enabled: 1
+    path: Assets/Scenes/Map3.unity
+    guid: e180d3acd78a1db43a56f6c999ca680a
+  - enabled: 1
+    path: Assets/Scenes/Map4.unity
+    guid: cfee9af1ca3a94b4ca69cf99669c381c
+  - enabled: 1
+    path: Assets/Scenes/Map5.unity
+    guid: ab87db661750d884aafb64e4226dffe2
+  - enabled: 1
+    path: Assets/Scenes/Map6.unity
+    guid: 4031206d16379fa45a71e45d156ba8b2
+  - enabled: 1
+    path: Assets/Scenes/Map7.unity
+    guid: d4a2bd5ef0ec22749832fe622d3c1c9b
+  - enabled: 1
+    path: Assets/Scenes/Map8.unity
+    guid: e3ab96ad217e71e4e89d45d79bde1d2f
+  - enabled: 1
+    path: Assets/Scenes/Map9.unity
+    guid: d97913c628c8a984490fb0995a53e0d7
+  - enabled: 1
+    path: Assets/Scenes/Map10.unity
+    guid: 221e1c56bb464814fa28e2d0b733ccd4
+  - enabled: 1
+    path: Assets/Scenes/Map11.unity
+    guid: d7862e89685b9ec4498961044a132f15
+  - enabled: 1
+    path: Assets/Scenes/Map12.unity
+    guid: ee0d5534a59495a43bd11bcc7453cd07
+  - enabled: 1
+    path: Assets/Scenes/Map13.unity
+    guid: 2f2f8e169a1116b42b89ca20b7f586df
+  - enabled: 1
+    path: Assets/Scenes/Map15.unity
+    guid: 476b97938e84f4b1593dd46023dca30f
+  - enabled: 1
+    path: Assets/Scenes/Map16.unity
+    guid: bebfb06a70713442d8edbaf09b21ef56
+  - enabled: 1
+    path: Assets/Scenes/Map17.unity
+    guid: a51431913a67c44eea2cf4bb9e4fa862
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
