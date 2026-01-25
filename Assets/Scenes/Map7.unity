@@ -1893,7 +1893,7 @@ GameObject:
   - component: {fileID: 227180420}
   - component: {fileID: 227180419}
   - component: {fileID: 227180418}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Brown On (32x8)_0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3003,7 +3003,7 @@ GameObject:
   - component: {fileID: 477671241}
   - component: {fileID: 477671244}
   - component: {fileID: 477671240}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Brown Off_0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3837,7 +3837,7 @@ GameObject:
   - component: {fileID: 716637642}
   - component: {fileID: 716637641}
   - component: {fileID: 716637640}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Grey Off_0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
