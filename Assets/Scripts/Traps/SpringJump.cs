@@ -2,6 +2,7 @@
 
 public class SpringJump : MonoBehaviour
 {
+    private Animator anim;
     public float jumpForce = 22f;
 
     Animator anim;
@@ -17,6 +18,7 @@ public class SpringJump : MonoBehaviour
 
         Rigidbody2D rb = other.GetComponent<Rigidbody2D>();
         if (rb == null) return;
+        anim.SetTrigger("doJump");
 
         // reset vận tốc rơi
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
