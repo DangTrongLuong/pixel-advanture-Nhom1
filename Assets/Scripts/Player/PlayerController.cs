@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour
     [Header("Ground Check")]
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private LayerMask sandLayer;
+    [SerializeField] private float sandSpeed = 2f;
 
     [Header("Wall Check")]
     [SerializeField] private Transform wallCheck;
@@ -29,11 +31,14 @@ public class PlayerController : MonoBehaviour
     private Animator animator;
     private GameManager gameManager;
 
+    private float normalSpeed; 
+
     private bool isGrounded;
     private bool isTouchingWall;
 
     private bool wasWallJumping = false;
     private bool canWallJump = true;
+    private bool isOnSand;
 
     private float moveInput;
     private float wallJumpTimer = 0f;
@@ -43,11 +48,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private int maxJumps = 1; 
 
     private void Awake()
-    {
-        rb = GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator>();
-        gameManager = FindAnyObjectByType<GameManager>();
-    }
+{
+    rb = GetComponent<Rigidbody2D>();
+    animator = GetComponent<Animator>();
+    gameManager = FindAnyObjectByType<GameManager>();
+
+    normalSpeed = moveSpeed; // thêm dòng này
+}
 
 
     private void Update()
@@ -60,6 +67,7 @@ public class PlayerController : MonoBehaviour
         HandleWallSlide();
         HandleJump();
         UpdateAnimation();
+        CheckSand();
 
         if (wallJumpTimer > 0)
             wallJumpTimer -= Time.deltaTime;
@@ -83,7 +91,9 @@ public class PlayerController : MonoBehaviour
         if (wallJumpTimer > 0)
             return;
 
-        rb.linearVelocity = new Vector2(moveInput * moveSpeed, rb.linearVelocity.y);
+        float speed = isOnSand ? sandSpeed : moveSpeed;
+
+        rb.linearVelocity = new Vector2(moveInput * speed, rb.linearVelocity.y);
 
         if (moveInput > 0) transform.localScale = Vector3.one;
         else if (moveInput < 0) transform.localScale = new Vector3(-1, 1, 1);
@@ -150,7 +160,7 @@ public class PlayerController : MonoBehaviour
         isGrounded = Physics2D.OverlapCircle(
             groundCheck.position,
             0.12f,
-            groundLayer
+            groundLayer | sandLayer
         );
 
         if (isGrounded)
@@ -227,4 +237,30 @@ public class PlayerController : MonoBehaviour
         animator.SetBool("isTouchingWall", isTouchingWall && !isGrounded);
         animator.SetInteger("jumpCount", jumpCount);
     }
+
+    void CheckSand()
+{
+    isOnSand = Physics2D.OverlapCircle(
+        groundCheck.position,
+        0.4f,
+        sandLayer
+    );
+}
+
+void OnCollisionEnter2D(Collision2D collision)
+{
+    if (collision.gameObject.layer == LayerMask.NameToLayer("Sand"))
+    {
+        moveSpeed = sandSpeed;
+    }
+}
+
+void OnCollisionExit2D(Collision2D collision)
+{
+    if (collision.gameObject.layer == LayerMask.NameToLayer("Sand"))
+    {
+        moveSpeed = normalSpeed;
+    }
+}
+
 }
