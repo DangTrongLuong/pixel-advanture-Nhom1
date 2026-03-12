@@ -1,91 +1,105 @@
 using UnityEngine;
+using System.Collections;
 
-public class BreakableBox : MonoBehaviour
+public class AdvancedBreakableBox : MonoBehaviour
 {
-    [Header("Cài đặt Items rơi ra")]
-    [Tooltip("Kéo các prefab hoa quả vào đây")]
-    [SerializeField] private GameObject[] itemPrefabs; 
+    public enum BoxType { Breakable, MultiHit, Persistent }
 
-    [Header("Lực bắn ra")]
-    [SerializeField] private float forceX = 3f; // Lực bắn sang ngang
-    [SerializeField] private float forceY = 5f; // Lực nảy lên cao
+    [Header("Cấu hình Loại Hộp")]
+    [SerializeField] private BoxType type = BoxType.MultiHit;
+    [SerializeField] private int maxHits = 3;
+    [SerializeField] private Sprite emptyBoxSprite; // Dùng cho loại Persistent
 
-    [Header("Cài đặt Animation")]
-    [Tooltip("Thời gian chờ animation vỡ chạy xong trước khi xóa hộp")]
-    [SerializeField] private float destroyDelay = 0.5f; 
+    [Header("Cấu hình Vật phẩm")]
+    [SerializeField] private GameObject[] itemPrefabs;
+    [SerializeField] private int itemsPerHit = 1;
+    [SerializeField] private float launchForceX = 4f;
+    [SerializeField] private float launchForceY = 6f;
 
+    [Header("Hiệu ứng & Animation")]
+    [SerializeField] private float destroyDelay = 0.5f;
+    [SerializeField] private string hitTrigger = "doHit";
+    [SerializeField] private string breakTrigger = "doBreak";
+
+    private int currentHits;
+    private bool isDepleted = false;
     private Animator anim;
+    private SpriteRenderer spriteRenderer;
     private Collider2D col;
-    private bool isBroken = false; // Đảm bảo chỉ vỡ 1 lần
 
     void Start()
     {
         anim = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         col = GetComponent<Collider2D>();
+        currentHits = maxHits;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // 1. Kiểm tra điều kiện: Chưa vỡ VÀ người chạm là Player
-        // (Đảm bảo nhân vật có Tag "Player" như các bài trước)
-        if (!isBroken && collision.gameObject.CompareTag("Player"))
+        // Kiểm tra Tag Player và hướng va chạm từ dưới lên
+        if (!isDepleted && collision.gameObject.CompareTag("Player") && collision.GetContact(0).normal.y > 0.5f)
         {
-            // Mẹo: Nếu chỉ muốn vỡ khi nhảy đụng đầu từ dưới lên (kiểu Mario)
-            // Hãy mở comment dòng dưới và đóng comment dòng if ở trên lại
-            // if (!isBroken && collision.gameObject.CompareTag("Player") && collision.GetContact(0).normal.y > 0.5f)
-            {
-                BreakTheBox();
-            }
+            HandleHit();
         }
     }
 
-    public void BreakTheBox()
+    private void HandleHit()
     {
-        isBroken = true;
+        currentHits--;
 
-        // 2. Tắt Collider ngay lập tức để nhân vật không bị kẹt khi hộp đang vỡ
-        col.enabled = false;
+        // 1. Hiệu ứng nảy/rung khi chạm
+        if (anim != null) anim.SetTrigger(hitTrigger);
 
-        // 3. Chạy animation vỡ
-        anim.SetTrigger("doBreak");
+        // 2. Rơi item (nếu là loại MultiHit hoặc còn lượt)
+        if (type == BoxType.MultiHit || (type == BoxType.Persistent && currentHits >= 0))
+        {
+            SpawnItems();
+        }
 
-        // 4. Sinh ra items
-        SpawnItems();
+        // 3. Kiểm tra trạng thái kết thúc
+        if (currentHits <= 0)
+        {
+            FinalizeBox();
+        }
+    }
 
-        // 5. Phá hủy hộp sau khi animation chạy xong
-        // (Hãy chỉnh destroyDelay khớp với độ dài animation vỡ của bạn)
-        Destroy(gameObject, destroyDelay);
+    private void FinalizeBox()
+    {
+        isDepleted = true;
+
+        if (type == BoxType.Breakable)
+        {
+            col.enabled = false;
+            if (anim != null) anim.SetTrigger(breakTrigger);
+            Destroy(gameObject, destroyDelay);
+        }
+        else if (type == BoxType.Persistent)
+        {
+            // Biến thành khối rỗng thay vì biến mất
+            if (emptyBoxSprite != null) spriteRenderer.sprite = emptyBoxSprite;
+            if (anim != null) anim.enabled = false; // Tắt anim để giữ sprite rỗng
+        }
     }
 
     private void SpawnItems()
     {
-        if (itemPrefabs.Length == 0) return;
-
-        // Bắn 1 quả sang trái
-        SpawnSingleItem(Vector2.left);
-        // Bắn 1 quả sang phải
-        SpawnSingleItem(Vector2.right);
-    }
-
-    private void SpawnSingleItem(Vector2 direction)
-    {
-        // Chọn ngẫu nhiên 1 loại quả từ danh sách
-        int randomIndex = Random.Range(0, itemPrefabs.Length);
-        GameObject selectedPrefab = itemPrefabs[randomIndex];
-
-        // Vị trí sinh ra (cao hơn tâm hộp 1 chút)
-        Vector2 spawnPos = transform.position + Vector3.up * 0.5f;
-        
-        // Tạo item
-        GameObject item = Instantiate(selectedPrefab, spawnPos, Quaternion.identity);
-
-        // Áp dụng lực bắn
-        Rigidbody2D itemRb = item.GetComponent<Rigidbody2D>();
-        if (itemRb != null)
+        for (int i = 0; i < itemsPerHit; i++)
         {
-            // Tạo vector lực chéo lên (sang bên + lên trên)
-            Vector2 force = new Vector2(direction.x * forceX, forceY);
-            itemRb.AddForce(force, ForceMode2D.Impulse);
+            if (itemPrefabs.Length == 0) return;
+
+            GameObject prefab = itemPrefabs[Random.Range(0, itemPrefabs.Length)];
+            // Sinh ra item cao hơn hộp một chút
+            GameObject item = Instantiate(prefab, transform.position + Vector3.up * 0.6f, Quaternion.identity);
+
+            Rigidbody2D rb = item.GetComponent<Rigidbody2D>();
+            if (rb != null)
+            {
+                // Tạo lực ngẫu nhiên trái/phải để item tản ra giống video
+                float randomDir = Random.Range(-1f, 1f);
+                Vector2 force = new Vector2(randomDir * launchForceX, launchForceY);
+                rb.AddForce(force, ForceMode2D.Impulse);
+            }
         }
     }
 }
