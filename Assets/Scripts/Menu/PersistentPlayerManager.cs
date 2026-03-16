@@ -86,12 +86,17 @@ public class PersistentPlayerManager : MonoBehaviour
         return selectedPlayer;
     }
 
+    public void ResetSelection()
+    {
+        selectedPlayer = null;
+        Debug.Log("Đã reset player selection → sẽ random lại sau khi scene load.");
+    }
+
     // -------------------------------------------------------------------------
     public void UpdatePlayersForNewScene()
     {
         CachePlayers();
 
-        // Nếu chưa chọn player (ví dụ start game từ Map1)
         if (selectedPlayer == null)
         {
             Debug.Log("Scene mới - chưa có player, random mới");
@@ -99,14 +104,12 @@ public class PersistentPlayerManager : MonoBehaviour
             return;
         }
 
-        // Tìm player tương ứng ở scene mới
         PlayerData selectedData = players.Find(p => p.obj.name == selectedPlayer.name);
 
         if (selectedData != null)
         {
             selectedPlayer = selectedData.obj;
 
-            // Tắt toàn bộ player khác, bật đúng player đang chọn
             int index = players.FindIndex(p => p.obj == selectedPlayer);
             ApplyActiveState(index);
 
