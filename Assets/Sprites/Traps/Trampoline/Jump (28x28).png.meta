@@ -152,10 +152,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 28
-        height: 28
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        width: 27
+        height: 9
+      alignment: 9
+      pivot: {x: 0.49514318, y: 0.17945452}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -172,12 +172,12 @@ TextureImporter:
       name: Jump (28x28)_1
       rect:
         serializedVersion: 2
-        x: 28
+        x: 29
         y: 0
-        width: 28
+        width: 25
         height: 28
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      alignment: 9
+      pivot: {x: 0.50524503, y: 0.059770625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -194,12 +194,12 @@ TextureImporter:
       name: Jump (28x28)_2
       rect:
         serializedVersion: 2
-        x: 56
+        x: 57
         y: 0
-        width: 28
-        height: 28
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        width: 25
+        height: 27
+      alignment: 9
+      pivot: {x: 0.4999997, y: 0.04832253}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -216,12 +216,12 @@ TextureImporter:
       name: Jump (28x28)_3
       rect:
         serializedVersion: 2
-        x: 84
+        x: 85
         y: 0
-        width: 28
-        height: 28
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        width: 25
+        height: 23
+      alignment: 9
+      pivot: {x: 0.50524503, y: 0.06669363}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -238,12 +238,12 @@ TextureImporter:
       name: Jump (28x28)_4
       rect:
         serializedVersion: 2
-        x: 112
+        x: 113
         y: 0
-        width: 28
-        height: 28
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        width: 25
+        height: 15
+      alignment: 9
+      pivot: {x: 0.4999994, y: 0.08911953}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -260,12 +260,12 @@ TextureImporter:
       name: Jump (28x28)_5
       rect:
         serializedVersion: 2
-        x: 140
+        x: 139
         y: 0
-        width: 28
-        height: 28
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        width: 29
+        height: 9
+      alignment: 9
+      pivot: {x: 0.5090427, y: 0.13574392}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -282,12 +282,12 @@ TextureImporter:
       name: Jump (28x28)_6
       rect:
         serializedVersion: 2
-        x: 168
+        x: 167
         y: 0
-        width: 28
-        height: 28
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        width: 29
+        height: 9
+      alignment: 9
+      pivot: {x: 0.50452185, y: 0.1503145}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -304,12 +304,12 @@ TextureImporter:
       name: Jump (28x28)_7
       rect:
         serializedVersion: 2
-        x: 196
+        x: 197
         y: 0
-        width: 28
-        height: 28
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        width: 25
+        height: 11
+      alignment: 9
+      pivot: {x: 0.4999994, y: 0.11852434}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -326,7 +326,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: dfc6c2344e430ab469ff642e82ea4acd
+    spriteID: 7e5d8091a034aea4f95d72b6630e783d
     internalID: 0
     vertices: []
     indices: 
@@ -334,9 +334,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries:
-      - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":28.0,"y":28.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
+      entries: []
     nameFileIdTable:
       Jump (28x28)_0: -3008879249828299126
       Jump (28x28)_1: 4681692366024343091
