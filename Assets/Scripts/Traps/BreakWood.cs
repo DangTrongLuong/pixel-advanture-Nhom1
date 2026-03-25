@@ -13,17 +13,32 @@ public class BreakWood : MonoBehaviour
         anim = GetComponent<Animator>();
     }
 
-    void OnTriggerEnter2D(Collider2D other)
+    void OnCollisionEnter2D(Collision2D other)
     {
-        if (other.CompareTag("Player") && !isBroken)
+        if (other.gameObject.CompareTag("Player") && !isBroken)
         {
-            isBroken = true;
+            Rigidbody2D rb = other.gameObject.GetComponent<Rigidbody2D>();
 
-            // chạy animation
-            anim.SetTrigger("Break");
+            foreach (ContactPoint2D contact in other.contacts)
+            {
+                if (contact.normal.y < -0.5f)
+                {
+                    if (rb != null)
+                    {
+                        rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
+                        rb.AddForce(Vector2.up * 8f, ForceMode2D.Impulse);
+                    }
 
-            // spawn mảnh sau 0.3s (đợi animation đầu chạy)
-            Invoke("SpawnPieces", 0.3f);
+                    BreakBox();
+                    return;
+                }
+
+                if (contact.normal.y > 0.5f)
+                {
+                    BreakBox();
+                    return;
+                }
+            }
         }
     }
 
@@ -40,6 +55,17 @@ public class BreakWood : MonoBehaviour
         Destroy(left, 1.5f);
         Destroy(right, 1.5f);
 
-        Destroy(gameObject, 0.5f);
+        Destroy(gameObject);
+    }
+
+    void BreakBox()
+    {
+        isBroken = true;
+
+        if (CameraShake.instance != null)
+            CameraShake.instance.Shake(0.1f, 0.15f);
+
+        anim.SetTrigger("Break");
+        Invoke(nameof(SpawnPieces), 0.3f);
     }
 }

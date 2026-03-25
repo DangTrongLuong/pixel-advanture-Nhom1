@@ -16,8 +16,8 @@ public class MenuBtn : MonoBehaviour
 
     private void Awake()
     {
-        // Tự tạo EventSystem nếu scene chưa có → fix lỗi button không click được
-        if (FindObjectOfType<EventSystem>() == null)
+
+        if (FindFirstObjectByType<EventSystem>() == null)
         {
             Debug.LogWarning("[MenuBtn] Không có EventSystem → Tự tạo mới.");
             GameObject es = new GameObject("EventSystem");
@@ -25,7 +25,6 @@ public class MenuBtn : MonoBehaviour
             es.AddComponent<StandaloneInputModule>();
         }
 
-        // Bind tất cả button trong children
         Button[] allButtons = GetComponentsInChildren<Button>(includeInactive: true);
         foreach (Button btn in allButtons)
         {
