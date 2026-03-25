@@ -8237,11 +8237,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4340045661438775910, guid: 269ecce34259777438c62cadb8c72d28, type: 3}
   m_PrefabInstance: {fileID: 1339849886}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &1339849887 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4340045661438775910, guid: 269ecce34259777438c62cadb8c72d28, type: 3}
-  m_PrefabInstance: {fileID: 1339849886}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1363291261
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8654,7 +8649,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: -0.24718094, w: 0}
+  m_margin: {x: 0, y: 0, z: 155.64828, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -8801,11 +8796,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 269ecce34259777438c62cadb8c72d28, type: 3}
---- !u!4 &1538094850 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4340045661438775910, guid: 269ecce34259777438c62cadb8c72d28, type: 3}
-  m_PrefabInstance: {fileID: 1538094849}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1538094850 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4340045661438775910, guid: 269ecce34259777438c62cadb8c72d28, type: 3}
@@ -11479,5 +11469,4 @@ SceneRoots:
   - {fileID: 1682836873}
   - {fileID: 426160111}
   - {fileID: 1693971031}
-  - {fileID: 545677658}
   - {fileID: 545677658}
