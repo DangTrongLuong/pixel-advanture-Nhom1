@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5436235aa47c99a498b3bf4fa2afaf18, type: 3}
+  m_Name: GameConfig
+  m_EditorClassIdentifier: Assembly-CSharp::GameConfig
+  moveSpeed: 6
+  sandSpeed: 2
+  maxJumps: 2
+  jumpForce: 15
+  wallSlideSpeed: -1.5
+  wallJumpForce: 15
+  wallJumpHorizontalForce: 8
+  wallJumpCooldown: 0.2

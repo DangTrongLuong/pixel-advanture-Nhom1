@@ -3,8 +3,8 @@ using UnityEngine;
 public class PlayerCollision : MonoBehaviour
 {
     [Header("Cài đặt quét Item")]
-    [SerializeField] private float detectionRadius = 0.5f; // Bán kính quét
-    [SerializeField] private LayerMask itemLayer; // Chỉ định Layer chứa hoa quả
+    [SerializeField] private float detectionRadius = 0.5f; 
+    [SerializeField] private LayerMask itemLayer; 
 
     private GameManager gameManager;
     private AudioManager audioManager;
@@ -32,7 +32,6 @@ public class PlayerCollision : MonoBehaviour
     }
 
     private void CollectItem(GameObject itemObj) {
-        // Thực hiện các lệnh từ GameManager và AudioManager
         if (gameManager != null) gameManager.AddScore(1);
         if (audioManager != null) audioManager.PlayCoinSound();
 
@@ -40,7 +39,6 @@ public class PlayerCollision : MonoBehaviour
         Debug.Log("Đã nhặt Item bằng phương pháp OverlapCircle!");
     }
 
-    // Vẽ vòng tròn quét trong Scene để bạn dễ căn chỉnh bán kính
     private void OnDrawGizmosSelected() {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, detectionRadius);

@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - Items
+  - Traps
   layers:
   - Default
   - TransparentFX
@@ -62,6 +63,12 @@ TagManager:
     locked: 0
   - name: UI
     uniqueID: 2101276667
+    locked: 0
+  - name: MenuBtn
+    uniqueID: 1697596453
+    locked: 0
+  - name: Foreground
+    uniqueID: 3722066067
     locked: 0
   m_RenderingLayers:
   - Default
