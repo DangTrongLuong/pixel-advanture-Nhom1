@@ -38,6 +38,10 @@ public class PlayerController : MonoBehaviour
     private Animator animator;
     private GameManager gameManager;
 
+    // ─── Hit & Death ──────────────────────────────────────────────
+    private bool isDead = false;
+    private bool isHit = false;
+
     // ─── Runtime state ────────────────────────────────────────────
     private float moveInput;
     private bool isGrounded;
@@ -62,6 +66,8 @@ public class PlayerController : MonoBehaviour
     // ─── Main loop ────────────────────────────────────────────────
     private void Update()
     {
+        if (isDead) return; // Không xử lý gì khi đã chết
+
         if (wallJumpTimer > 0f)
             wallJumpTimer -= Time.deltaTime;
 
@@ -257,5 +263,39 @@ public class PlayerController : MonoBehaviour
             landDust.Play();
     }
 
+    // ─── Damage & Death ───────────────────────────────────────────
+    public void TakeDamage(float forceX = 0f, float forceY = 0f)
+    {
+        if (isDead || isHit) return;
+        StartCoroutine(DieSequence(forceX, forceY));
+    }
 
+    private IEnumerator DieSequence(float forceX, float forceY)
+    {
+        isDead = true;
+        isHit = true;
+
+        // Phát animation chết
+        animator.SetBool(AnimRunning, false);
+        animator.SetBool(AnimJumping, false);
+        animator.SetBool(AnimFalling, false);
+        animator.SetBool(AnimWallSlide, false);
+        animator.Play("PlayerHIt");
+
+        // Tắt collider để xuyên qua sàn rơi xuống luôn
+        Collider2D col = GetComponent<Collider2D>();
+        if (col != null) col.enabled = false;
+
+        // Gravity mạnh + đẩy xuống ngay lập tức
+        rb.gravityScale = 5f;
+        rb.linearVelocity = new Vector2(forceX, forceY);
+
+        // Chờ player rơi ra khỏi bản đồ (khoảng 1.5s)
+        yield return new WaitForSeconds(1.5f);
+
+        UnityEngine.SceneManagement.SceneManager.LoadScene(
+            UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex
+        );
+    }
 }
+    }
