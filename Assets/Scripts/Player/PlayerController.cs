@@ -27,11 +27,15 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float wallJumpHorizontalForce = 8f;
     [SerializeField] private float wallJumpCooldown = 0.2f;
 
+    [Header("Hit & Death")]
+    private bool isDead = false;
+    private bool isHit = false;
+
     private Rigidbody2D rb;
     private Animator animator;
     private GameManager gameManager;
 
-    private float normalSpeed; 
+    private float normalSpeed;
 
     private bool isGrounded;
     private bool isTouchingWall;
@@ -43,22 +47,21 @@ public class PlayerController : MonoBehaviour
     private float moveInput;
     private float wallJumpTimer = 0f;
 
-    // DOUBLE JUMP FIXED
     private int jumpCount = 0;
-    [SerializeField] private int maxJumps = 1; 
+    [SerializeField] private int maxJumps = 1;
 
     private void Awake()
-{
-    rb = GetComponent<Rigidbody2D>();
-    animator = GetComponent<Animator>();
-    gameManager = FindAnyObjectByType<GameManager>();
-
-    normalSpeed = moveSpeed; // thêm dòng này
-}
-
+    {
+        rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
+        gameManager = FindAnyObjectByType<GameManager>();
+        normalSpeed = moveSpeed;
+    }
 
     private void Update()
     {
+        if (isDead) return; // không xử lý gì khi đã chết
+
         ReadInput();
         HandleMovement();
         CheckGround();
@@ -72,7 +75,6 @@ public class PlayerController : MonoBehaviour
         if (wallJumpTimer > 0)
             wallJumpTimer -= Time.deltaTime;
     }
-
 
     // -------------------------------------------------------------
     private void ReadInput()
@@ -125,14 +127,12 @@ public class PlayerController : MonoBehaviour
             );
 
             jumpCount = 1;
-
             animator.Play("PlayerJump");
 
             StartCoroutine(WallJumpCooldown());
             return;
         }
 
-        // DOUBLE JUMP FIX
         if (jumpCount < maxJumps)
         {
             jumpCount++;
@@ -167,7 +167,6 @@ public class PlayerController : MonoBehaviour
         {
             wasWallJumping = false;
 
-            // RESET jumpCount đúng lúc
             if (rb.linearVelocity.y <= 0.1f)
                 jumpCount = 0;
 
@@ -203,11 +202,8 @@ public class PlayerController : MonoBehaviour
         {
             wasWallJumping = false;
 
-            // FIX: Reset jumpCount khi bật ra khỏi tường
             if (wasWallBefore && !isGrounded)
-            {
                 jumpCount = 0;
-            }
         }
     }
 
@@ -217,9 +213,7 @@ public class PlayerController : MonoBehaviour
         if (isTouchingWall && !isGrounded && !wasWallJumping)
         {
             if (rb.linearVelocity.y < wallSlideSpeed)
-            {
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, wallSlideSpeed);
-            }
         }
     }
 
@@ -229,38 +223,65 @@ public class PlayerController : MonoBehaviour
         float vy = rb.linearVelocity.y;
 
         animator.SetBool("isRunning", Mathf.Abs(moveInput) > 0.1f && isGrounded);
-
         animator.SetBool("isJumping", vy > 0.1f && !isGrounded);
-
         animator.SetBool("isFalling", vy < -0.1f && !isGrounded);
-
         animator.SetBool("isTouchingWall", isTouchingWall && !isGrounded);
         animator.SetInteger("jumpCount", jumpCount);
     }
 
     void CheckSand()
+    {
+        isOnSand = Physics2D.OverlapCircle(
+            groundCheck.position,
+            0.4f,
+            sandLayer
+        );
+    }
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Sand"))
+            moveSpeed = sandSpeed;
+    }
+
+    void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Sand"))
+            moveSpeed = normalSpeed;
+    }
+
+    // -------------------------------------------------------------
+ public void TakeDamage(float forceX = 0f, float forceY = 0f)
 {
-    isOnSand = Physics2D.OverlapCircle(
-        groundCheck.position,
-        0.4f,
-        sandLayer
+    if (isDead || isHit) return;
+    StartCoroutine(DieSequence(forceX, forceY));
+}
+
+private IEnumerator DieSequence(float forceX, float forceY)
+{
+    isDead = true;
+    isHit = true;
+
+    // Phát animation chết
+    animator.SetBool("isRunning", false);
+    animator.SetBool("isJumping", false);
+    animator.SetBool("isFalling", false);
+    animator.SetBool("isTouchingWall", false);
+    animator.Play("PlayerHIt");
+
+    // Tắt collider để xuyên qua sàn rơi xuống luôn
+    Collider2D col = GetComponent<Collider2D>();
+    if (col != null) col.enabled = false;
+
+    // Gravity mạnh + đẩy xuống ngay lập tức
+    rb.gravityScale = 5f;
+    rb.linearVelocity = new Vector2(forceX, forceY);
+
+    // Chờ player rơi ra khỏi bản đồ (khoảng 1.5s)
+    yield return new WaitForSeconds(1.5f);
+
+    UnityEngine.SceneManagement.SceneManager.LoadScene(
+        UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex
     );
 }
-
-void OnCollisionEnter2D(Collision2D collision)
-{
-    if (collision.gameObject.layer == LayerMask.NameToLayer("Sand"))
-    {
-        moveSpeed = sandSpeed;
-    }
-}
-
-void OnCollisionExit2D(Collision2D collision)
-{
-    if (collision.gameObject.layer == LayerMask.NameToLayer("Sand"))
-    {
-        moveSpeed = normalSpeed;
-    }
-}
-
 }
