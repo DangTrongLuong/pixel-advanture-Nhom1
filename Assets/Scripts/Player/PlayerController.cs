@@ -18,7 +18,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private LayerMask sandLayer;
     [SerializeField] private LayerMask wallLayer;
-    [SerializeField] private float groundCheckRadius = 0.12f;
     [SerializeField] private float wallOffsetX = 0.12f;
     [SerializeField] private float wallCheckDistance = 0.05f;
 

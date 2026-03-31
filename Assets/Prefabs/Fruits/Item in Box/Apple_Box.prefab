@@ -14,9 +14,9 @@ GameObject:
   - component: {fileID: 1887768217445260311}
   - component: {fileID: -4428431490948778734}
   - component: {fileID: -7224210557518069060}
-  - component: {fileID: -861442643286820278}
+  - component: {fileID: -5297745926143497236}
   m_Layer: 10
-  m_Name: Apple_0 1
+  m_Name: Apple_Box
   m_TagString: Items
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -31,7 +31,7 @@ Transform:
   m_GameObject: {fileID: 1002649855582414687}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.019, y: -0.805, z: 0}
+  m_LocalPosition: {x: 3.3448, y: 3.65917, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -216,8 +216,8 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.4
---- !u!114 &-861442643286820278
+  m_Radius: 0.3
+--- !u!114 &-5297745926143497236
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -226,8 +226,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 1002649855582414687}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a4cfabaf9e074648b6bcae09aa0ea46, type: 3}
+  m_Script: {fileID: 11500000, guid: 744fabb230b88d64b90fee094de33707, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemSpawnProtection
   canBePickedUp: 0
-  protectionTime: 0.5
+  protectionTime: 0.3
