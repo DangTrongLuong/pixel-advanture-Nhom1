@@ -2,45 +2,41 @@ using UnityEngine;
 
 public class PlayerCollision : MonoBehaviour
 {
-    [Header("Cài đặt quét Item")]
-    [SerializeField] private float detectionRadius = 0.5f; 
-    [SerializeField] private LayerMask itemLayer; 
-
     private GameManager gameManager;
     private AudioManager audioManager;
 
-    private void Awake() {
+    private void Awake() 
+    {
+        // Tìm các Manager trong Scene
         gameManager = Object.FindFirstObjectByType<GameManager>();
         audioManager = Object.FindFirstObjectByType<AudioManager>();
     }
 
-    private void Update() {
-        // Quét các vật thể ở Layer Items
-    Collider2D item = Physics2D.OverlapCircle(transform.position, detectionRadius, itemLayer);
+    // Hàm này tự động được Unity gọi khi có va chạm với 1 Trigger Collider
+    private void OnTriggerEnter2D(Collider2D collision) 
+    {
+        // 1. Kiểm tra Tag của vật thể va chạm
+        if (collision.CompareTag("Items")) 
+        {
+            // 2. Lấy script bảo vệ từ item (nếu có)
+            ItemSpawnProtection protection = collision.GetComponent<ItemSpawnProtection>();
 
-    if (item != null) {
-        // Lấy script bảo vệ từ item vừa quét được
-        ItemSpawnProtection protection = item.GetComponent<ItemSpawnProtection>();
-
-        // Chỉ nhặt nếu item không có script bảo vệ HOẶC đã hết thời gian bảo vệ
-        if (protection == null || protection.canBePickedUp) {
-            if (item.CompareTag("Items")) {
-                CollectItem(item.gameObject);
+            // 3. Chỉ nhặt nếu item không có script bảo vệ HOẶC đã hết thời gian bảo vệ
+            if (protection == null || protection.canBePickedUp) 
+            {
+                CollectItem(collision.gameObject);
             }
         }
     }
-    }
 
-    private void CollectItem(GameObject itemObj) {
+    private void CollectItem(GameObject itemObj) 
+    {
+        // Cộng điểm và phát âm thanh
         if (gameManager != null) gameManager.AddScore(1);
         if (audioManager != null) audioManager.PlayCoinSound();
 
+        // Xóa item khỏi Scene
         Destroy(itemObj);
-        Debug.Log("Đã nhặt Item bằng phương pháp OverlapCircle!");
-    }
-
-    private void OnDrawGizmosSelected() {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, detectionRadius);
+        Debug.Log("Đã nhặt Item bằng sự kiện OnTriggerEnter2D!");
     }
 }
