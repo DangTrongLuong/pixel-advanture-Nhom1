@@ -20,6 +20,7 @@ public class RockHead : MonoBehaviour
     private BoxCollider2D col;
     private int direction = 1;
     private bool isWaiting = false;
+    private float hitCooldownTimer = 0f;
 
     void Awake()
     {
@@ -37,6 +38,13 @@ public class RockHead : MonoBehaviour
     void Update()
     {
         if (isWaiting) return;
+        
+        // Cooldown timer sau hit
+        if (hitCooldownTimer > 0)
+        {
+            hitCooldownTimer -= Time.deltaTime;
+            return;
+        }
         
         float targetVelocity = direction * moveSpeed;
         rb.linearVelocity = new Vector2(Mathf.Lerp(rb.linearVelocity.x, targetVelocity, Time.deltaTime * 5f), 0f);
@@ -169,6 +177,9 @@ public class RockHead : MonoBehaviour
         yield return new WaitForSeconds(waitAfterHit);
 
         rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+        
+        // Longer cooldown to prevent flicker
+        hitCooldownTimer = 0.8f;
         isWaiting = false;
     }
 

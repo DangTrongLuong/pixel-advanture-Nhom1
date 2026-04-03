@@ -29,6 +29,7 @@ public class RockHeadCircle : MonoBehaviour
     private Rigidbody2D rb;
     private BoxCollider2D col;
     private bool isWaiting = false;
+    private float hitCooldownTimer = 0f;
 
     void Awake()
     {
@@ -47,6 +48,13 @@ public class RockHeadCircle : MonoBehaviour
     void Update()
     {
         if (isWaiting) return;
+        
+        // Cooldown timer sau hit
+        if (hitCooldownTimer > 0)
+        {
+            hitCooldownTimer -= Time.deltaTime;
+            return;
+        }
         
         // Smooth movement using lerp
         Vector2 targetVelocity = directions[currentDirIndex] * moveSpeed;
@@ -182,6 +190,9 @@ public class RockHeadCircle : MonoBehaviour
 
         rb.constraints = RigidbodyConstraints2D.FreezeRotation;
         currentDirIndex = (currentDirIndex + 1) % 4;
+        
+        // Longer cooldown to prevent flicker
+        hitCooldownTimer = 0.8f;
         isWaiting = false;
     }
 
