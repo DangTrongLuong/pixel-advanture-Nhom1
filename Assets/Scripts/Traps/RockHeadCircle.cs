@@ -4,10 +4,10 @@ using System.Collections;
 public class RockHeadCircle : MonoBehaviour
 {
     [Header("Movement")]
-    [SerializeField] private float moveSpeed = 8f;
+    [SerializeField] private float moveSpeed = 12f;
     [SerializeField] private float hitAnimSpeed = 2.5f;
     [SerializeField] private float normalAnimSpeed = 1f;
-    [SerializeField] private float waitAfterHit = 0.6f;
+    [SerializeField] private float waitAfterHit = 1.2f;
 
     [Header("Layer Check")]
     [SerializeField] private LayerMask wallLayer;
@@ -47,8 +47,48 @@ public class RockHeadCircle : MonoBehaviour
     void Update()
     {
         if (isWaiting) return;
-        rb.linearVelocity = directions[currentDirIndex] * moveSpeed;
+        
+        // Smooth movement using lerp
+        Vector2 targetVelocity = directions[currentDirIndex] * moveSpeed;
+        rb.linearVelocity = Vector2.Lerp(rb.linearVelocity, targetVelocity, Time.deltaTime * 5f);
+        
+        // Detect player on top and sync velocity
+        DetectAndMovePlayerOnTop();
+        
         CheckObstacle();
+    }
+
+    private void DetectAndMovePlayerOnTop()
+    {
+        // Use OverlapBox to detect player standing on top
+        Vector2 checkPos = transform.position + (Vector3)Vector2.up * (col.size.y / 2f + 0.3f);
+        Collider2D[] hits = Physics2D.OverlapBoxAll(
+            checkPos,
+            new Vector2(col.size.x * 1.2f, 0.5f),
+            0f,
+            LayerMask.GetMask("Player")
+        );
+
+        foreach (Collider2D hit in hits)
+        {
+            if (hit.CompareTag("Player"))
+            {
+                Rigidbody2D playerRb = hit.GetComponent<Rigidbody2D>();
+                if (playerRb != null)
+                {
+                    // KHÔNG sync nếu player rơi xuống (Y velocity âm)
+                    if (playerRb.linearVelocity.y < -0.1f) return;
+                    
+                    // Sync player's velocity with rockhead based on direction
+                    Vector2 moveDir = directions[currentDirIndex];
+                    playerRb.linearVelocity = new Vector2(
+                        Mathf.Abs(moveDir.x) > 0.5f ? rb.linearVelocity.x : playerRb.linearVelocity.x,
+                        Mathf.Abs(moveDir.y) > 0.5f ? rb.linearVelocity.y : playerRb.linearVelocity.y
+                    );
+                }
+                break;
+            }
+        }
     }
 
     void CheckObstacle()
@@ -75,12 +115,32 @@ public class RockHeadCircle : MonoBehaviour
         if (!other.gameObject.CompareTag("Player")) return;
         if (isWaiting) return;
 
-        // Player nhảy lên đầu không chết
-        Vector2 dirToPlayer = other.transform.position - transform.position;
-        bool playerOnTop = Vector2.Dot(dirToPlayer.normalized, Vector2.up) > 0.5f;
-        if (playerOnTop) return;
+        // Check xem player có đứng trên TOP của RockHead không
+        float rockHeadTopY = transform.position.y + col.size.y / 2f;
+        bool playerOnTop = other.transform.position.y > rockHeadTopY;
+        
+        if (playerOnTop)
+        {
+            // Nếu đứng trên đầu, check xem RockHead có hit obstacle không
+            // Nếu có + RockHead đẩy → player bị đẹ lại → chết
+            LayerMask obstacleLayer = wallLayer | groundLayer;
+            RaycastHit2D obstacleAhead = Physics2D.Raycast(
+                transform.position,
+                directions[currentDirIndex],
+                1.0f,
+                obstacleLayer
+            );
+            
+            if (obstacleAhead.collider != null)
+            {
+                // RockHead hit obstacle → player chết
+                other.gameObject.GetComponent<PlayerController>()
+                    ?.TakeDamage(0f, 10f);
+            }
+            return;
+        }
 
-        LayerMask obstacleLayer = wallLayer | groundLayer;
+        LayerMask obstacleLayer2 = wallLayer | groundLayer;
         Vector2 origin = new Vector2(
             other.transform.position.x,
             other.transform.position.y
@@ -90,7 +150,7 @@ public class RockHeadCircle : MonoBehaviour
             origin,
             directions[currentDirIndex],
             crushCheckDistance,
-            obstacleLayer
+            obstacleLayer2
         );
 
         if (obstacleBehind.collider != null)

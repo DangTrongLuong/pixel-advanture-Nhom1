@@ -52,6 +52,8 @@ public class PlayerDeathHandler : MonoBehaviour
         StartCoroutine(DieRoutine());
     }
 
+    public void Die() => TriggerDeath();
+
     private IEnumerator DieRoutine()
     {
         playerController.enabled = false;
@@ -86,29 +88,9 @@ public class PlayerDeathHandler : MonoBehaviour
 
     private Sprite GetLastSpriteFromClip(string clipName)
     {
-        foreach (var clip in animator.runtimeAnimatorController.animationClips)
-        {
-            if (clip.name != clipName) continue;
-
-            Sprite lastSprite = null;
-            float lastTime = -1f;
-
-            foreach (var binding in UnityEditor.AnimationUtility.GetObjectReferenceCurveBindings(clip))
-            {
-                if (!binding.propertyName.Contains("m_Sprite")) continue;
-                var keys = UnityEditor.AnimationUtility.GetObjectReferenceCurve(clip, binding);
-                foreach (var key in keys)
-                {
-                    if (key.time > lastTime)
-                    {
-                        lastTime = key.time;
-                        lastSprite = key.value as Sprite;
-                    }
-                }
-            }
-            return lastSprite;
-        }
-        return null;
+        // Logic cũ sử dụng UnityEditor API - không thể chạy trong game
+        // Thay vào đó, lấy sprite current từ SpriteRenderer
+        return spriteRenderer.sprite;
     }
 
     private IEnumerator FlashScreen()

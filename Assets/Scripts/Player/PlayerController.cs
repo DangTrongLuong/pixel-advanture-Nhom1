@@ -21,6 +21,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float wallOffsetX = 0.12f;
     [SerializeField] private float wallCheckDistance = 0.05f;
 
+    private LayerMask trapLayer;
+
     // ─── Animator hashes ──────────────────────────────────────────
     static readonly int AnimRunning = Animator.StringToHash("isRunning");
     static readonly int AnimJumping = Animator.StringToHash("isJumping");
@@ -60,6 +62,9 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         gameManager = FindAnyObjectByType<GameManager>();
+        
+        // Tự động detect Traps layer
+        trapLayer = LayerMask.GetMask("Traps");
     }
 
     // ─── Main loop ────────────────────────────────────────────────
@@ -96,7 +101,7 @@ public class PlayerController : MonoBehaviour
         groundCheck.position,
         new Vector2(0.8f, 0.1f),
         0f,
-        groundLayer | sandLayer
+        groundLayer | sandLayer | trapLayer
     );
 
         if (isGrounded)
@@ -142,9 +147,32 @@ public class PlayerController : MonoBehaviour
     private void CheckWall()
     {
         wasTouchingWall = isTouchingWall;
+        isTouchingWall = false;
 
         Vector2 dir = new Vector2(transform.localScale.x, 0f);
-        isTouchingWall = Physics2D.Raycast(wallCheck.position, dir, wallCheckDistance, wallLayer);
+        RaycastHit2D hit = Physics2D.Raycast(wallCheck.position, dir, wallCheckDistance, wallLayer | trapLayer);
+        
+        if (hit.collider != null)
+        {
+            // Nếu hit là trap, check rotation để xem có phải wall trap không
+            if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Traps"))
+            {
+                // Check rotation của trap
+                float rotZ = hit.collider.transform.eulerAngles.z;
+                if (rotZ > 180f) rotZ -= 360f;
+                
+                // Chỉ wall slide nếu trap nằm ngang (-90°, -270°, 90°)
+                bool isHorizontal = Mathf.Abs(rotZ - (-90f)) < 45f || Mathf.Abs(rotZ - (-270f)) < 45f || 
+                                   Mathf.Abs(rotZ - 90f) < 45f;
+                
+                isTouchingWall = isHorizontal;
+            }
+            else
+            {
+                // Nếu là wall layer bình thường → wall slide
+                isTouchingWall = true;
+            }
+        }
 
         if (!isTouchingWall)
         {
@@ -237,7 +265,7 @@ public class PlayerController : MonoBehaviour
 
         animator.SetBool(AnimRunning, Mathf.Abs(moveInput) > 0.1f && isGrounded);
         animator.SetBool(AnimJumping, vy > 0.1f && !isGrounded);
-        animator.SetBool(AnimFalling, (vy < -0.1f && !isGrounded) || isFallingFromGround);
+        animator.SetBool(AnimFalling, !isGrounded && (vy < -0.1f || isFallingFromGround));
         animator.SetBool(AnimWallSlide, isTouchingWall && !isGrounded);
         animator.SetInteger(AnimJumpCount, jumpCount);
     }
@@ -262,11 +290,48 @@ public class PlayerController : MonoBehaviour
             landDust.Play();
     }
 
+    // ─── Collision with Moving Platforms (RockHead) ───────────────
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        // Kiểm tra xem object có RockHead component không
+        if (collision.gameObject.GetComponent<RockHead>() != null ||
+            collision.gameObject.GetComponent<RockHeadVertical>() != null ||
+            collision.gameObject.GetComponent<RockHeadCircle>() != null ||
+            collision.gameObject.GetComponent<RockHeadCircleReverse>() != null)
+        {
+            foreach (ContactPoint2D contact in collision.contacts)
+            {
+                // Nếu player đứng trên TOP (normal.y > 0.5 = từ dưới lên)
+                if (contact.normal.y > 0.5f)
+                {
+                    isGrounded = true;
+                    isFallingFromGround = false;
+                    wasWallJumping = false;
+                    break;
+                }
+            }
+        }
+    }
+
     // ─── Damage & Death ───────────────────────────────────────────
     public void TakeDamage(float forceX = 0f, float forceY = 0f)
     {
         if (isDead || isHit) return;
-        StartCoroutine(DieSequence(forceX, forceY));
+        
+        isDead = true;
+        isHit = true;
+        
+        // Dùng PlayerDeathHandler để trigger death (nếu có)
+        var deathHandler = GetComponent<PlayerDeathHandler>();
+        if (deathHandler != null)
+        {
+            deathHandler.Die();
+        }
+        else
+        {
+            // Fallback: nếu không có PlayerDeadHandler, dùng logic cũ
+            StartCoroutine(DieSequence(forceX, forceY));
+        }
     }
 
     private IEnumerator DieSequence(float forceX, float forceY)
