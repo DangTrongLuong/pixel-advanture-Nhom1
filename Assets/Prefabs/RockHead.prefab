@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6330754452508485738}
   - component: {fileID: 9008771098296947716}
   - component: {fileID: 1447373744606140402}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RockHead
   m_TagString: Untagged
   m_Icon: {fileID: 0}

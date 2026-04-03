@@ -6,10 +6,12 @@ public class Fire : MonoBehaviour
     [SerializeField] private Vector2 damageOffsetBase = new Vector2(0f, 0.5f);
     [SerializeField] private Vector2 damageSize = new Vector2(0.8f, 1f);
     [SerializeField] private LayerMask playerLayer;
+    [SerializeField] private float knockbackForceX = 5f;  // Knockback X direction
 
     private Animator animator;
     private bool triggered = false;
     private bool active = false;
+    private LayerMask trapLayer;  // Để detect player đứng trên trap
 
     private static readonly int activateAnim = Animator.StringToHash("Activate");
 
@@ -43,6 +45,7 @@ public class Fire : MonoBehaviour
     void Awake()
     {
         animator = GetComponent<Animator>();
+        trapLayer = LayerMask.GetMask("Traps");
     }
 
     void Start()
@@ -55,10 +58,38 @@ public class Fire : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player") && !triggered)
         {
+            // Kiểm tra xem player có đang từ phía TRÊN trap không
+            BoxCollider2D col = GetComponent<BoxCollider2D>();
+            float fireTopY = transform.position.y + col.size.y / 2f;
+            bool playerFromTop = other.transform.position.y > fireTopY;
+            
+            // Chỉ kích hoạt nếu player từ phía trên
+            if (!playerFromTop) return;
+            
             triggered = true;
             animator.ResetTrigger(activateAnim);
             animator.SetTrigger(activateAnim);
             Debug.Log("[Fire] Triggered by player — playing Trap_Hit");
+        }
+    }
+
+    // Fallback: trigger via OnTriggerEnter2D nếu Fire trap có collider trigger
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Player") && !triggered)
+        {
+            // Kiểm tra xem player có đang từ phía TRÊN trap không
+            BoxCollider2D col = GetComponent<BoxCollider2D>();
+            float fireTopY = transform.position.y + col.size.y / 2f;
+            bool playerFromTop = other.transform.position.y > fireTopY;
+            
+            // Chỉ kích hoạt nếu player từ phía trên
+            if (!playerFromTop) return;
+            
+            triggered = true;
+            animator.ResetTrigger(activateAnim);
+            animator.SetTrigger(activateAnim);
+            Debug.Log("[Fire] Triggered by player (trigger) — playing Trap_Hit");
         }
     }
 
@@ -70,54 +101,43 @@ public class Fire : MonoBehaviour
 
         active = true;
         Vector2 offset = GetDamageOffset();
-        Debug.Log("[Fire] ActivateDamage() called — scanning for player...");
 
-        // Dùng OverlapBoxAll để debug số lượng collider bắt được
+        // Detect player trên playerLayer OR trapLayer (để detect player đứng trên trap)
         Collider2D[] hits = Physics2D.OverlapBoxAll(
             (Vector2)transform.position + offset,
             damageSize,
             0f,
-            playerLayer
+            playerLayer | trapLayer
         );
-
-        Debug.Log($"[Fire] OverlapBoxAll found {hits.Length} collider(s) on playerLayer");
 
         foreach (Collider2D hit in hits)
         {
-            Debug.Log($"[Fire] Hit: {hit.gameObject.name} | Tag: {hit.tag} | Layer: {LayerMask.LayerToName(hit.gameObject.layer)}");
-
             if (hit.CompareTag("Player"))
             {
                 var pc = hit.GetComponent<PlayerController>();
                 if (pc != null)
                 {
-                    Debug.Log("[Fire] PlayerController found → TakeDamage(999)");
-                    pc.TakeDamage(999f, 0f);
-                }
-                else
-                {
-                    Debug.LogWarning("[Fire] Player tag found nhưng KHÔNG có PlayerController component!");
+                    // Gây damage với knockback direction để tạo hiệu ứng chết giống Map 10
+                    pc.TakeDamage(knockbackForceX, 0f);
                 }
                 break;
             }
         }
 
-        // Fallback: nếu playerLayer chưa set trong Inspector
-        if (playerLayer.value == 0)
+        // Fallback: nếu không tìm thấy player qua OverlapBox, dùng FindWithTag
+        if (hits.Length == 0)
         {
-            Debug.LogWarning("[Fire] playerLayer = 0! Chưa set trong Inspector. Dùng fallback FindWithTag...");
             GameObject player = GameObject.FindWithTag("Player");
             if (player != null)
             {
-                Vector2 center    = (Vector2)transform.position + offset;
+                Vector2 center = (Vector2)transform.position + offset;
                 Vector2 playerPos = player.transform.position;
                 float dx = Mathf.Abs(playerPos.x - center.x);
                 float dy = Mathf.Abs(playerPos.y - center.y);
 
                 if (dx <= damageSize.x * 0.5f && dy <= damageSize.y * 0.5f)
                 {
-                    Debug.Log("[Fire] Fallback hit → TakeDamage(999)");
-                    player.GetComponent<PlayerController>()?.TakeDamage(999f, 0f);
+                    player.GetComponent<PlayerController>()?.TakeDamage(knockbackForceX, 0f);
                 }
             }
         }
@@ -128,7 +148,6 @@ public class Fire : MonoBehaviour
     {
         active = false;
         triggered = false;
-        Debug.Log("[Fire] DeactivateDamage() called — trap reset");
     }
 
     // ─── Update: backup liên tục khi player đứng trong lửa ──────────
@@ -142,14 +161,14 @@ public class Fire : MonoBehaviour
             (Vector2)transform.position + offset,
             damageSize,
             0f,
-            playerLayer
+            playerLayer | trapLayer
         );
 
         foreach (Collider2D hit in hits)
         {
             if (hit.CompareTag("Player"))
             {
-                hit.GetComponent<PlayerController>()?.TakeDamage(999f, 0f);
+                hit.GetComponent<PlayerController>()?.TakeDamage(knockbackForceX, 0f);
                 break;
             }
         }
