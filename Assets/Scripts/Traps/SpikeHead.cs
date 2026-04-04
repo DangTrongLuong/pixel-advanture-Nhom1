@@ -76,6 +76,12 @@ public class SpikeHead : MonoBehaviour
         rb.linearVelocity = Vector2.zero;
         rb.constraints = RigidbodyConstraints2D.FreezeAll;
 
+        // 🔥 CAMERA SHAKE ONLY
+        if (CameraShake.instance != null)
+        {
+            CameraShake.instance.Shake(0.15f, 0.08f);
+        }
+
         // Animation hit nhanh
         animator.speed = hitAnimSpeed;
         if (direction == 1)

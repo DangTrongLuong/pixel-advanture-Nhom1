@@ -152,6 +152,12 @@ public class RockHeadVertical : MonoBehaviour
         rb.linearVelocity = Vector2.zero;
         rb.constraints = RigidbodyConstraints2D.FreezeAll;
 
+        // 🔥 CAMERA SHAKE ONLY
+        if (CameraShake.instance != null)
+        {
+            CameraShake.instance.Shake(0.15f, 0.08f);
+        }
+
         animator.speed = hitAnimSpeed;
 
         string triggerName = direction == -1 ? "BottomHit" : "TopHit";
