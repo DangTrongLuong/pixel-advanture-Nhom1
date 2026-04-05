@@ -1,19 +1,22 @@
 fileFormatVersion: 2
-guid: 83c66a20825725b4a99a69e67970b6c0
+guid: cbce87609c293604e89a15ebb869e7ed
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2696157268093233548
-    second: Right Hit (54x52)_0
+      213: 5986030973748356752
+    second: Explosion_0
   - first:
-      213: 3480149600529691005
-    second: Right Hit (54x52)_1
+      213: -5600206312213581617
+    second: Explosion_1
   - first:
-      213: -5644974908550553447
-    second: Right Hit (54x52)_2
+      213: 3815954189206336483
+    second: Explosion_2
   - first:
-      213: -339516178220321277
-    second: Right Hit (54x52)_3
+      213: -3690502768834906923
+    second: Explosion_3
+  - first:
+      213: -49130668184793455
+    second: Explosion_4
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -135,89 +138,133 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Right Hit (54x52)_0
+      name: Explosion_0
       rect:
         serializedVersion: 2
-        x: 10
-        y: 0
-        width: 40
-        height: 52
+        x: 11
+        y: 11
+        width: 10
+        height: 10
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 47617b0ef33559ad0800000000000000
-      internalID: -2696157268093233548
+      spriteID: 096a1cc8477a21350800000000000000
+      internalID: 5986030973748356752
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Right Hit (54x52)_1
+      name: Explosion_1
       rect:
         serializedVersion: 2
-        x: 64
-        y: 0
-        width: 40
-        height: 52
+        x: 42
+        y: 10
+        width: 12
+        height: 12
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: d713ac08f99fb4030800000000000000
-      internalID: 3480149600529691005
+      spriteID: fc0fb9bb7021842b0800000000000000
+      internalID: -5600206312213581617
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Right Hit (54x52)_2
+      name: Explosion_2
       rect:
         serializedVersion: 2
-        x: 116
-        y: 1
-        width: 42
-        height: 49
+        x: 72
+        y: 8
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 990e9d1aa3509a1b0800000000000000
-      internalID: -5644974908550553447
+      spriteID: 3e3bec60e1ef4f430800000000000000
+      internalID: 3815954189206336483
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Right Hit (54x52)_3
+      name: Explosion_3
       rect:
         serializedVersion: 2
-        x: 168
-        y: 2
-        width: 44
-        height: 47
+        x: 102
+        y: 6
+        width: 20
+        height: 20
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 306fda1b5dbc94bf0800000000000000
-      internalID: -339516178220321277
+      spriteID: 5d4fffce843b8ccc0800000000000000
+      internalID: -3690502768834906923
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Explosion_4
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 4
+        width: 24
+        height: 24
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 19e8447eae3715ff0800000000000000
+      internalID: -49130668184793455
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Explosion_5
+      rect:
+        serializedVersion: 2
+        x: 163
+        y: 3
+        width: 26
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d1017862f00164647a73611021ccf9f0
+      internalID: -1339585897
       vertices: []
       indices: 
       edges: []
@@ -226,7 +273,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 7580861aee8a205478f5e64653c31007
     internalID: 0
     vertices: []
     indices: 
@@ -236,10 +283,12 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Right Hit (54x52)_0: -2696157268093233548
-      Right Hit (54x52)_1: 3480149600529691005
-      Right Hit (54x52)_2: -5644974908550553447
-      Right Hit (54x52)_3: -339516178220321277
+      Explosion_0: 5986030973748356752
+      Explosion_1: -5600206312213581617
+      Explosion_2: 3815954189206336483
+      Explosion_3: -3690502768834906923
+      Explosion_4: -49130668184793455
+      Explosion_5: -1339585897
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

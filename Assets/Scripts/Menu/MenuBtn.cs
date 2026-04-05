@@ -14,6 +14,8 @@ public class MenuBtn : MonoBehaviour
     [SerializeField] private Sprite iconVolumeOn;
     [SerializeField] private Sprite iconVolumeOff;
 
+    private const string WIN_SCENE = "WinGame";
+
     private void Awake()
     {
 
@@ -53,19 +55,48 @@ public class MenuBtn : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    public void OnNext()
+   public void OnNext()
+{
+    string currentScene = SceneManager.GetActiveScene().name;
+
+    if (currentScene == "Map17")
     {
-        int current = GetCurrentMapIndex();
-        if (current == -1) return;
-        SceneManager.LoadScene("Map" + (current % MAP_MAX + 1));
+        SceneManager.LoadScene(WIN_SCENE);
+        return;
+    }
+    if (currentScene == WIN_SCENE)
+    {
+        SceneManager.LoadScene("Map1");
+        return;
     }
 
+    int current = GetCurrentMapIndex();
+    if (current == -1) return;
+
+    SceneManager.LoadScene("Map" + (current + 1));
+}
+
     public void OnPrev()
+{
+    string currentScene = SceneManager.GetActiveScene().name;
+
+    if (currentScene == "Map1")
     {
-        int current = GetCurrentMapIndex();
-        if (current == -1) return;
-        SceneManager.LoadScene("Map" + (current == MAP_MIN ? MAP_MAX : current - 1));
+        SceneManager.LoadScene(WIN_SCENE);
+        return;
     }
+
+    if (currentScene == WIN_SCENE)
+    {
+        SceneManager.LoadScene("Map17");
+        return;
+    }
+
+    int current = GetCurrentMapIndex();
+    if (current == -1) return;
+
+    SceneManager.LoadScene("Map" + (current - 1));
+}
 
     public void OnLevel()
     {
@@ -82,6 +113,8 @@ public class MenuBtn : MonoBehaviour
     private int GetCurrentMapIndex()
     {
         string sceneName = SceneManager.GetActiveScene().name;
+          if (sceneName == "Wingame")
+        return MAP_MAX;
         if (sceneName.StartsWith("Map") && int.TryParse(sceneName.Substring(3), out int index))
             return index;
         Debug.LogWarning("[MenuBtn] Scene không phải dạng MapX: " + sceneName);
