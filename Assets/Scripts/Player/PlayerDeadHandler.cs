@@ -12,6 +12,9 @@ public class PlayerDeathHandler : MonoBehaviour
     [SerializeField] private float flashDuration = 0.02f;
     [SerializeField] private int flashCount = 1;
 
+    [Header("Reload")]
+    [SerializeField] private float reloadDelay = 1.5f;
+
     private Image flashImage;
     private Rigidbody2D rb;
     private Animator animator;
@@ -35,6 +38,7 @@ public class PlayerDeathHandler : MonoBehaviour
             Debug.LogWarning("Không tìm thấy DeathFlash trong Scene!");
     }
 
+    // ── Trigger từ va chạm ────────────────────
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Traps")) TriggerDeath();
@@ -45,18 +49,25 @@ public class PlayerDeathHandler : MonoBehaviour
         if (other.gameObject.CompareTag("Traps")) TriggerDeath();
     }
 
-    private void TriggerDeath()
+    // ── Gọi từ PlayerController.TakeDamage ───
+    public void Die(float forceX = 0f, float forceY = 0f)
+    {
+        TriggerDeath(forceX, forceY);
+    }
+
+    // ── Core ──────────────────────────────────
+    private void TriggerDeath(float forceX = 0f, float forceY = 0f)
     {
         if (isDead) return;
         isDead = true;
-        StartCoroutine(DieRoutine());
+        StartCoroutine(DieRoutine(forceX, forceY));
     }
 
-    public void Die() => TriggerDeath();
-
-    private IEnumerator DieRoutine()
+    private IEnumerator DieRoutine(float forceX, float forceY)
     {
+
         playerController.enabled = false;
+
         animator.SetBool(AnimDead, true);
 
         spriteRenderer.sortingLayerName = "Foreground";
@@ -66,31 +77,27 @@ public class PlayerDeathHandler : MonoBehaviour
             col.enabled = false;
 
         rb.simulated = true;
-
-        float dir = transform.localScale.x;
         rb.linearVelocity = Vector2.zero;
         rb.gravityScale = 3f;
-        rb.AddForce(new Vector2(-dir * bounceBackForce, bounceUpForce), ForceMode2D.Impulse);
+
+        if (forceX != 0f || forceY != 0f)
+        {
+            rb.AddForce(new Vector2(forceX, forceY), ForceMode2D.Impulse);
+        }
+        else
+        {
+            float dir = transform.localScale.x;
+            rb.AddForce(new Vector2(-dir * bounceBackForce, bounceUpForce), ForceMode2D.Impulse);
+        }
 
         StartCoroutine(FlashScreen());
 
         yield return null;
         yield return null;
-
         float clipLength = animator.GetCurrentAnimatorStateInfo(0).length;
-        yield return new WaitForSeconds(clipLength);
+        yield return new WaitForSeconds(Mathf.Max(clipLength, reloadDelay));
 
-        Sprite lastSprite = GetLastSpriteFromClip("PlayerHit");
         animator.enabled = false;
-        if (lastSprite != null)
-            spriteRenderer.sprite = lastSprite;
-    }
-
-    private Sprite GetLastSpriteFromClip(string clipName)
-    {
-        // Logic cũ sử dụng UnityEditor API - không thể chạy trong game
-        // Thay vào đó, lấy sprite current từ SpriteRenderer
-        return spriteRenderer.sprite;
     }
 
     private IEnumerator FlashScreen()

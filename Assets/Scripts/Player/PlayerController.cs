@@ -3,7 +3,6 @@ using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
-    // ─── Config ───────────────────────────────────────────────────
     [Header("Config")]
     [SerializeField] private GameConfig config;
 
@@ -23,7 +22,6 @@ public class PlayerController : MonoBehaviour
 
     private LayerMask trapLayer;
 
-    // ─── Animator hashes ──────────────────────────────────────────
     static readonly int AnimRunning = Animator.StringToHash("isRunning");
     static readonly int AnimJumping = Animator.StringToHash("isJumping");
     static readonly int AnimFalling = Animator.StringToHash("isFalling");
@@ -34,17 +32,17 @@ public class PlayerController : MonoBehaviour
     static readonly int AnimDblJump = Animator.StringToHash("PlayerDubbleJump");
     static readonly int AnimFall = Animator.StringToHash("PlayerFall");
 
-    // ─── Components ───────────────────────────────────────────────
     private Rigidbody2D rb;
     private Animator animator;
     private GameManager gameManager;
 
-    // ─── Hit & Death ──────────────────────────────────────────────
     private bool isDead = false;
     private bool isHit = false;
 
-    // ─── Runtime state ────────────────────────────────────────────
     private float moveInput;
+    private float joystickInput;
+    private float keyboardInput;
+
     private bool isGrounded;
     private bool wasGrounded;
     private bool isOnSand;
@@ -56,26 +54,25 @@ public class PlayerController : MonoBehaviour
     private int jumpCount;
     private float wallJumpTimer;
 
-    // ─── Init ─────────────────────────────────────────────────────
+    public System.Action<float> OnMoveInputChanged;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         gameManager = FindAnyObjectByType<GameManager>();
-        
-        // Tự động detect Traps layer
         trapLayer = LayerMask.GetMask("Traps");
     }
 
-    // ─── Main loop ────────────────────────────────────────────────
     private void Update()
     {
-        if (isDead) return; // Không xử lý gì khi đã chết
+        if (isDead) return;
 
         if (wallJumpTimer > 0f)
             wallJumpTimer -= Time.deltaTime;
 
-        ReadInput();
+        ReadKeyboard();
+        ResolveMoveInput();
         CheckGround();
         CheckSand();
         UpdateWallCheckPosition();
@@ -87,32 +84,54 @@ public class PlayerController : MonoBehaviour
         HandleDustEffects();
     }
 
-    // ─── Input ────────────────────────────────────────────────────
-    private void ReadInput()
+    public bool IsGrounded => isGrounded;
+    public float MoveInput => moveInput;
+
+    public void SetMoveInput(float value) => joystickInput = value;
+
+    public void MobileJump()
     {
-        moveInput = Input.GetAxisRaw("Horizontal");
+        if (isTouchingWall && !isGrounded && canWallJump && !wasWallJumping)
+        {
+            ExecuteWallJump();
+            return;
+        }
+        if (jumpCount < config.maxJumps)
+            ExecuteJump();
     }
 
-    // ─── Ground / Sand / Wall detection ──────────────────────────
+    private void ReadKeyboard()
+    {
+        float h = Input.GetAxisRaw("Horizontal");
+        if (h == 0f)
+        {
+            if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) h = -1f;
+            if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) h = 1f;
+        }
+        keyboardInput = h;
+    }
+
+    private void ResolveMoveInput()
+    {
+        float prev = moveInput;
+        moveInput = (keyboardInput != 0f) ? keyboardInput : joystickInput;
+        if (!Mathf.Approximately(moveInput, prev))
+            OnMoveInputChanged?.Invoke(moveInput);
+    }
+
     private void CheckGround()
     {
         wasGrounded = isGrounded;
         isGrounded = Physics2D.OverlapBox(
-        groundCheck.position,
-        new Vector2(0.8f, 0.1f),
-        0f,
-        groundLayer | sandLayer | trapLayer
-    );
+            groundCheck.position, new Vector2(0.8f, 0.1f), 0f,
+            groundLayer | sandLayer | trapLayer);
 
         if (isGrounded)
         {
             wasWallJumping = false;
             isFallingFromGround = false;
-
-            if (rb.linearVelocity.y <= 0.1f)
-                jumpCount = 0;
-            if (!wasGrounded)
-                animator.Play(AnimIdle);
+            if (rb.linearVelocity.y <= 0.1f) jumpCount = 0;
+            if (!wasGrounded) animator.Play(AnimIdle);
         }
         else
         {
@@ -128,11 +147,7 @@ public class PlayerController : MonoBehaviour
     private void CheckSand()
     {
         isOnSand = Physics2D.OverlapBox(
-            groundCheck.position,
-            new Vector2(0.8f, 0.1f),
-            0f,
-            sandLayer
-        );
+            groundCheck.position, new Vector2(0.8f, 0.1f), 0f, sandLayer);
     }
 
     private void UpdateWallCheckPosition()
@@ -140,8 +155,7 @@ public class PlayerController : MonoBehaviour
         wallCheck.position = new Vector3(
             transform.position.x + wallOffsetX * transform.localScale.x,
             transform.position.y,
-            transform.position.z
-        );
+            transform.position.z);
     }
 
     private void CheckWall()
@@ -151,25 +165,19 @@ public class PlayerController : MonoBehaviour
 
         Vector2 dir = new Vector2(transform.localScale.x, 0f);
         RaycastHit2D hit = Physics2D.Raycast(wallCheck.position, dir, wallCheckDistance, wallLayer | trapLayer);
-        
+
         if (hit.collider != null)
         {
-            // Nếu hit là trap, check rotation để xem có phải wall trap không
             if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Traps"))
             {
-                // Check rotation của trap
                 float rotZ = hit.collider.transform.eulerAngles.z;
                 if (rotZ > 180f) rotZ -= 360f;
-                
-                // Chỉ wall slide nếu trap nằm ngang (-90°, -270°, 90°)
-                bool isHorizontal = Mathf.Abs(rotZ - (-90f)) < 45f || Mathf.Abs(rotZ - (-270f)) < 45f || 
-                                   Mathf.Abs(rotZ - 90f) < 45f;
-                
-                isTouchingWall = isHorizontal;
+                isTouchingWall = Mathf.Abs(rotZ - (-90f)) < 45f ||
+                                 Mathf.Abs(rotZ - (-270f)) < 45f ||
+                                 Mathf.Abs(rotZ - 90f) < 45f;
             }
             else
             {
-                // Nếu là wall layer bình thường → wall slide
                 isTouchingWall = true;
             }
         }
@@ -177,12 +185,10 @@ public class PlayerController : MonoBehaviour
         if (!isTouchingWall)
         {
             wasWallJumping = false;
-            if (wasTouchingWall && !isGrounded)
-                jumpCount = 0;
+            if (wasTouchingWall && !isGrounded) jumpCount = 0;
         }
     }
 
-    // ─── Movement ────────────────────────────────────────────────
     private void HandleMovement()
     {
         if (isTouchingWall && !isGrounded && moveInput != 0f
@@ -191,7 +197,6 @@ public class PlayerController : MonoBehaviour
             rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
             return;
         }
-
         if (wallJumpTimer > 0f) return;
 
         float speed = (isOnSand && isGrounded) ? config.sandSpeed : config.moveSpeed;
@@ -201,7 +206,6 @@ public class PlayerController : MonoBehaviour
         else if (moveInput < 0f) transform.localScale = new Vector3(-1f, 1f, 1f);
     }
 
-    // ─── Jump ─────────────────────────────────────────────────────
     private void HandleJump()
     {
         if (!JumpPressed()) return;
@@ -211,9 +215,7 @@ public class PlayerController : MonoBehaviour
             ExecuteWallJump();
             return;
         }
-
-        if (jumpCount < config.maxJumps)
-            ExecuteJump();
+        if (jumpCount < config.maxJumps) ExecuteJump();
     }
 
     private void ExecuteWallJump()
@@ -244,25 +246,23 @@ public class PlayerController : MonoBehaviour
         canWallJump = true;
     }
 
-    private static bool JumpPressed() =>
-        Input.GetButtonDown("Jump") ||
-        Input.GetKeyDown(KeyCode.UpArrow) ||
-        Input.GetKeyDown(KeyCode.W);
+    private static bool JumpPressed()
+    {
+        return Input.GetButtonDown("Jump")
+            || Input.GetKeyDown(KeyCode.UpArrow)
+            || Input.GetKeyDown(KeyCode.W);
+    }
 
-    // ─── Wall slide ───────────────────────────────────────────────
     private void HandleWallSlide()
     {
         if (!isTouchingWall || isGrounded || wasWallJumping) return;
-
         if (rb.linearVelocity.y < config.wallSlideSpeed)
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, config.wallSlideSpeed);
     }
 
-    // ─── Animation ───────────────────────────────────────────────
     private void UpdateAnimation()
     {
         float vy = rb.linearVelocity.y;
-
         animator.SetBool(AnimRunning, Mathf.Abs(moveInput) > 0.1f && isGrounded);
         animator.SetBool(AnimJumping, vy > 0.1f && !isGrounded);
         animator.SetBool(AnimFalling, !isGrounded && (vy < -0.1f || isFallingFromGround));
@@ -270,30 +270,18 @@ public class PlayerController : MonoBehaviour
         animator.SetInteger(AnimJumpCount, jumpCount);
     }
 
-    // ─── Dust effects ─────────────────────────────────────────────
     private void HandleDustEffects()
     {
         bool shouldRunDust = isGrounded && Mathf.Abs(moveInput) > 0.1f;
-        if (shouldRunDust)
-        {
-            if (!runDust.isPlaying) runDust.Play();
-        }
-        else
-        {
-            runDust.Stop(true, ParticleSystemStopBehavior.StopEmitting);
-        }
+        if (shouldRunDust) { if (!runDust.isPlaying) runDust.Play(); }
+        else runDust.Stop(true, ParticleSystemStopBehavior.StopEmitting);
 
-        if (wasGrounded && !isGrounded && rb.linearVelocity.y > 0f)
-            jumpDust.Play();
-
-        if (!wasGrounded && isGrounded)
-            landDust.Play();
+        if (wasGrounded && !isGrounded && rb.linearVelocity.y > 0f) jumpDust.Play();
+        if (!wasGrounded && isGrounded) landDust.Play();
     }
 
-    // ─── Collision with Moving Platforms (RockHead) ───────────────
     private void OnCollisionStay2D(Collision2D collision)
     {
-        // Kiểm tra xem object có RockHead component không
         if (collision.gameObject.GetComponent<RockHead>() != null ||
             collision.gameObject.GetComponent<RockHeadVertical>() != null ||
             collision.gameObject.GetComponent<RockHeadCircle>() != null ||
@@ -301,65 +289,29 @@ public class PlayerController : MonoBehaviour
         {
             foreach (ContactPoint2D contact in collision.contacts)
             {
-                // Nếu player đứng trên TOP (normal.y > 0.5 = từ dưới lên)
                 if (contact.normal.y > 0.5f)
                 {
-                    isGrounded = true;
-                    isFallingFromGround = false;
-                    wasWallJumping = false;
+                    isGrounded = true; isFallingFromGround = false; wasWallJumping = false;
                     break;
                 }
             }
         }
     }
 
-    // ─── Damage & Death ───────────────────────────────────────────
     public void TakeDamage(float forceX = 0f, float forceY = 0f)
     {
         if (isDead || isHit) return;
-        
         isDead = true;
         isHit = true;
-        
-        // Dùng PlayerDeathHandler để trigger death (nếu có)
+
         var deathHandler = GetComponent<PlayerDeathHandler>();
-        if (deathHandler != null)
-        {
-            deathHandler.Die();
-        }
-        else
-        {
-            // Fallback: nếu không có PlayerDeadHandler, dùng logic cũ
-            StartCoroutine(DieSequence(forceX, forceY));
-        }
+        if (deathHandler != null) deathHandler.Die(forceX, forceY);
     }
 
-    private IEnumerator DieSequence(float forceX, float forceY)
+    private void OnDrawGizmos()
     {
-        isDead = true;
-        isHit = true;
-
-        // Phát animation chết
-        animator.SetBool(AnimRunning, false);
-        animator.SetBool(AnimJumping, false);
-        animator.SetBool(AnimFalling, false);
-        animator.SetBool(AnimWallSlide, false);
-        animator.Play("PlayerHIt");
-
-        // Tắt collider để xuyên qua sàn rơi xuống luôn
-        Collider2D col = GetComponent<Collider2D>();
-        if (col != null) col.enabled = false;
-
-        // Gravity mạnh + đẩy xuống ngay lập tức
-        rb.gravityScale = 5f;
-        rb.linearVelocity = new Vector2(forceX, forceY);
-
-        // Chờ player rơi ra khỏi bản đồ (khoảng 1.5s)
-        yield return new WaitForSeconds(1.5f);
-
-        UnityEngine.SceneManagement.SceneManager.LoadScene(
-            UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex
-        );
+        if (groundCheck == null) return;
+        Gizmos.color = isGrounded ? Color.green : Color.red;
+        Gizmos.DrawWireCube(groundCheck.position, new Vector2(0.8f, 0.1f));
     }
 }
-    
