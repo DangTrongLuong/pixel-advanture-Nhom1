@@ -21,7 +21,7 @@ TagManager:
   - Sand
   - Mud
   - Pickup
-  - 
+  - Ice
   - 
   - 
   - 
@@ -51,6 +51,9 @@ TagManager:
     locked: 0
   - name: Ground
     uniqueID: 3959453125
+    locked: 0
+  - name: Ice
+    uniqueID: 2011798577
     locked: 0
   - name: Wall
     uniqueID: 3630797035
