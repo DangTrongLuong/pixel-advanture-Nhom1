@@ -14,6 +14,7 @@ public class PersistentPlayerManager : MonoBehaviour
         public SpriteRenderer sr;
         public Collider2D col;
         public Rigidbody2D rb;
+        public PlayerController controller;
     }
 
     private void Awake()
@@ -44,7 +45,8 @@ public class PersistentPlayerManager : MonoBehaviour
                 obj = p,
                 sr = p.GetComponent<SpriteRenderer>(),
                 col = p.GetComponent<Collider2D>(),
-                rb = p.GetComponent<Rigidbody2D>()
+                rb = p.GetComponent<Rigidbody2D>(),
+                controller = p.GetComponent<PlayerController>()
             });
         }
     }
@@ -77,7 +79,15 @@ public class PersistentPlayerManager : MonoBehaviour
             if (players[i].col) players[i].col.enabled = active;
             if (players[i].rb)
                 players[i].rb.bodyType = active ? RigidbodyType2D.Dynamic : RigidbodyType2D.Kinematic;
+            if (players[i].controller) players[i].controller.enabled = active;
         }
+    }
+
+    public PlayerController GetSelectedController()
+    {
+        if (selectedPlayer == null) return null;
+        var data = players.Find(p => p.obj == selectedPlayer);
+        return data?.controller;
     }
 
     // -------------------------------------------------------------------------
