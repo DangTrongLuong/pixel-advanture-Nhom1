@@ -742,6 +742,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02d6b22b5ae49e640972d2e44e66f6a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  movementType: 0
   moveSpeed: 8
   hitAnimSpeed: 2.5
   normalAnimSpeed: 1
@@ -752,6 +753,9 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 128
+  blinkIntervalMin: 3
+  blinkIntervalMax: 6
+  startDirection: 0
 --- !u!1001 &78131857
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -763,7 +767,7 @@ PrefabInstance:
     - target: {fileID: 1447373744606140402, guid: 63204f18a8e9c744983ce19934eea190, type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: a6b6477b36f601f4cb55d68865fc03aa, type: 2}
+      objectReference: {fileID: 22100000, guid: 1de7f5343f0044a42bcb89565589548d, type: 2}
     - target: {fileID: 3650547259938065877, guid: 63204f18a8e9c744983ce19934eea190, type: 3}
       propertyPath: m_LocalPosition.x
       value: -14.5
@@ -819,14 +823,14 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 5432043281505263930, guid: 63204f18a8e9c744983ce19934eea190, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 78131859}
+      addedObject: {fileID: 78131865}
   m_SourcePrefab: {fileID: 100100000, guid: 63204f18a8e9c744983ce19934eea190, type: 3}
 --- !u!1 &78131858 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5432043281505263930, guid: 63204f18a8e9c744983ce19934eea190, type: 3}
   m_PrefabInstance: {fileID: 78131857}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &78131859
+--- !u!114 &78131865
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -835,19 +839,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 78131858}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a9cc4802e1cef54586e3913f5ffd654, type: 3}
+  m_Script: {fileID: 11500000, guid: 02d6b22b5ae49e640972d2e44e66f6a9, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: '::'
-  moveSpeed: 8
+  m_EditorClassIdentifier: Assembly-CSharp::RockHead
+  movementType: 1
+  moveSpeed: 12
   hitAnimSpeed: 2.5
   normalAnimSpeed: 1
-  waitAfterHit: 1
+  waitAfterHit: 1.2
   wallLayer:
     serializedVersion: 2
     m_Bits: 64
   groundLayer:
     serializedVersion: 2
     m_Bits: 128
+  blinkIntervalMin: 3
+  blinkIntervalMax: 6
   startDirection: -1
 --- !u!1 &80954504
 GameObject:
@@ -7940,14 +7947,14 @@ PrefabInstance:
     - target: {fileID: 1447373744606140402, guid: 63204f18a8e9c744983ce19934eea190, type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: a61940747b4684b468c99bbdbcfc2402, type: 2}
+      objectReference: {fileID: 22100000, guid: 2f4935a511706ad4098f892d3f2519b0, type: 2}
     - target: {fileID: 3650547259938065877, guid: 63204f18a8e9c744983ce19934eea190, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 10
+      value: -5
       objectReference: {fileID: 0}
     - target: {fileID: 3650547259938065877, guid: 63204f18a8e9c744983ce19934eea190, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4
+      value: -2
       objectReference: {fileID: 0}
     - target: {fileID: 3650547259938065877, guid: 63204f18a8e9c744983ce19934eea190, type: 3}
       propertyPath: m_LocalPosition.z
@@ -8000,14 +8007,14 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 5432043281505263930, guid: 63204f18a8e9c744983ce19934eea190, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 977519891}
+      addedObject: {fileID: 977519897}
   m_SourcePrefab: {fileID: 100100000, guid: 63204f18a8e9c744983ce19934eea190, type: 3}
 --- !u!1 &977519884 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5432043281505263930, guid: 63204f18a8e9c744983ce19934eea190, type: 3}
   m_PrefabInstance: {fileID: 977519883}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &977519891
+--- !u!114 &977519897
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8016,19 +8023,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 977519884}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c1ff4aa976d38694d8294057e853d1b6, type: 3}
+  m_Script: {fileID: 11500000, guid: 02d6b22b5ae49e640972d2e44e66f6a9, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: '::'
-  moveSpeed: 8
+  m_EditorClassIdentifier: Assembly-CSharp::RockHead
+  movementType: 2
+  moveSpeed: 12
   hitAnimSpeed: 2.5
   normalAnimSpeed: 1
-  waitAfterHit: 1
+  waitAfterHit: 1.2
   wallLayer:
     serializedVersion: 2
     m_Bits: 64
   groundLayer:
     serializedVersion: 2
     m_Bits: 128
+  blinkIntervalMin: 3
+  blinkIntervalMax: 6
   startDirection: 0
 --- !u!1001 &979538594
 PrefabInstance:
@@ -9189,14 +9199,14 @@ PrefabInstance:
     - target: {fileID: 1447373744606140402, guid: 63204f18a8e9c744983ce19934eea190, type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: a61940747b4684b468c99bbdbcfc2402, type: 2}
+      objectReference: {fileID: 22100000, guid: 2f4935a511706ad4098f892d3f2519b0, type: 2}
     - target: {fileID: 3650547259938065877, guid: 63204f18a8e9c744983ce19934eea190, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -5
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 3650547259938065877, guid: 63204f18a8e9c744983ce19934eea190, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 3650547259938065877, guid: 63204f18a8e9c744983ce19934eea190, type: 3}
       propertyPath: m_LocalPosition.z
@@ -9249,14 +9259,14 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 5432043281505263930, guid: 63204f18a8e9c744983ce19934eea190, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1835647229}
+      addedObject: {fileID: 1835647235}
   m_SourcePrefab: {fileID: 100100000, guid: 63204f18a8e9c744983ce19934eea190, type: 3}
 --- !u!1 &1835647222 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5432043281505263930, guid: 63204f18a8e9c744983ce19934eea190, type: 3}
   m_PrefabInstance: {fileID: 1835647221}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1835647229
+--- !u!114 &1835647235
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9265,19 +9275,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 1835647222}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1c2116cec249ba842bc7586f9deb3214, type: 3}
+  m_Script: {fileID: 11500000, guid: 02d6b22b5ae49e640972d2e44e66f6a9, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: '::'
-  moveSpeed: 8
+  m_EditorClassIdentifier: Assembly-CSharp::RockHead
+  movementType: 3
+  moveSpeed: 12
   hitAnimSpeed: 2.5
   normalAnimSpeed: 1
-  waitAfterHit: 1
+  waitAfterHit: 1.2
   wallLayer:
     serializedVersion: 2
     m_Bits: 64
   groundLayer:
     serializedVersion: 2
     m_Bits: 128
+  blinkIntervalMin: 3
+  blinkIntervalMax: 6
   startDirection: 0
 --- !u!1 &1863627096
 GameObject:
@@ -10241,6 +10254,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1447373744606140402, guid: 63204f18a8e9c744983ce19934eea190, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 22100000, guid: ac0d49119166deb4da561c3b1e49bda9, type: 2}
     - target: {fileID: 3650547259938065877, guid: 63204f18a8e9c744983ce19934eea190, type: 3}
       propertyPath: m_LocalPosition.x
       value: -7

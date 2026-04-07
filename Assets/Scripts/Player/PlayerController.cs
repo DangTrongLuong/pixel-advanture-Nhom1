@@ -451,10 +451,8 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionStay2D(Collision2D collision)
     {
-        if (collision.gameObject.GetComponent<RockHead>() != null ||
-            collision.gameObject.GetComponent<RockHeadVertical>() != null ||
-            collision.gameObject.GetComponent<RockHeadCircle>() != null ||
-            collision.gameObject.GetComponent<RockHeadCircleReverse>() != null)
+        // Kiểm tra xem object có RockHead component không
+        if (collision.gameObject.GetComponent<RockHead>() != null)
         {
             foreach (ContactPoint2D contact in collision.contacts)
             {

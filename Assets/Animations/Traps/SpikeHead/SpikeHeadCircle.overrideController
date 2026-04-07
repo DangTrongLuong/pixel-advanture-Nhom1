@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: SpikeHeadCircle
+  m_Controller: {fileID: 9100000, guid: 893ae050fc55c574ca340046423430c6, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: bd836b8de40f5b849a8a1a1c5bf18647, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: bd836b8de40f5b849a8a1a1c5bf18647, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: c52f134ea41723044827784d8fd207b1, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: c52f134ea41723044827784d8fd207b1, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 9780050103c6d7c49a9b4abeab45e124, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 9780050103c6d7c49a9b4abeab45e124, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 002e318c7563f1349b2496e3b45b80ee, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 002e318c7563f1349b2496e3b45b80ee, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 400ef0ea9e5719e4e9e3e4f3fe0daa3a, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 400ef0ea9e5719e4e9e3e4f3fe0daa3a, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 4255d31bdc3745c4a847394e485c8979, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 4255d31bdc3745c4a847394e485c8979, type: 2}
