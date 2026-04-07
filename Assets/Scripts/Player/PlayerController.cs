@@ -47,6 +47,12 @@ public class PlayerController : MonoBehaviour
     private bool wasGrounded;
     private bool isOnSand;
     private bool isFallingFromGround;
+    // FIX 1: Grace timer — keeps isGrounded = true for a short window when physics
+    // briefly loses contact at the ground→sand collider seam (1-2 frame gap).
+    // Without this, isTouchingWall + !isGrounded triggers wall-lock at the boundary.
+    private float groundedGraceTimer;
+    private const float GroundedGrace = 0.08f;
+
     private bool isTouchingWall;
     private bool wasTouchingWall;
     private bool wasWallJumping;
@@ -122,9 +128,22 @@ public class PlayerController : MonoBehaviour
     private void CheckGround()
     {
         wasGrounded = isGrounded;
-        isGrounded = Physics2D.OverlapBox(
-            groundCheck.position, new Vector2(0.8f, 0.1f), 0f,
+
+        bool physicsGrounded = Physics2D.OverlapBox(
+            groundCheck.position, new Vector2(1f, 0.1f), 0f,
             groundLayer | sandLayer | trapLayer);
+
+
+        if (physicsGrounded)
+        {
+            groundedGraceTimer = GroundedGrace;
+            isGrounded = true;
+        }
+        else
+        {
+            groundedGraceTimer -= Time.deltaTime;
+            isGrounded = groundedGraceTimer > 0f;
+        }
 
         if (isGrounded)
         {
@@ -147,7 +166,7 @@ public class PlayerController : MonoBehaviour
     private void CheckSand()
     {
         isOnSand = Physics2D.OverlapBox(
-            groundCheck.position, new Vector2(0.8f, 0.1f), 0f, sandLayer);
+            groundCheck.position, new Vector2(1f, 0.1f), 0f, sandLayer);
     }
 
     private void UpdateWallCheckPosition()
@@ -164,6 +183,10 @@ public class PlayerController : MonoBehaviour
         isTouchingWall = false;
 
         Vector2 dir = new Vector2(transform.localScale.x, 0f);
+        // FIX 2: sandLayer is intentionally excluded from this raycast.
+        // Sand collider edges were being detected as walls when entering the zone,
+        // causing isTouchingWall = true even while on the ground surface.
+        // Sand should never act as a wall — only wallLayer and trapLayer qualify.
         RaycastHit2D hit = Physics2D.Raycast(wallCheck.position, dir, wallCheckDistance, wallLayer | trapLayer);
 
         if (hit.collider != null)
@@ -292,6 +315,7 @@ public class PlayerController : MonoBehaviour
                 if (contact.normal.y > 0.5f)
                 {
                     isGrounded = true; isFallingFromGround = false; wasWallJumping = false;
+                    groundedGraceTimer = GroundedGrace; 
                     break;
                 }
             }
@@ -312,6 +336,6 @@ public class PlayerController : MonoBehaviour
     {
         if (groundCheck == null) return;
         Gizmos.color = isGrounded ? Color.green : Color.red;
-        Gizmos.DrawWireCube(groundCheck.position, new Vector2(0.8f, 0.1f));
+        Gizmos.DrawWireCube(groundCheck.position, new Vector2(1f, 0.1f));
     }
 }
