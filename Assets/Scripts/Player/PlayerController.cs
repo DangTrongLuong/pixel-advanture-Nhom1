@@ -170,6 +170,18 @@ public class PlayerController : MonoBehaviour
             isGrounded = groundedGraceTimer > 0f;
         }
 
+
+        if (physicsGrounded)
+        {
+            groundedGraceTimer = GroundedGrace;
+            isGrounded = true;
+        }
+        else
+        {
+            groundedGraceTimer -= Time.deltaTime;
+            isGrounded = groundedGraceTimer > 0f;
+        }
+
         if (isGrounded)
         {
             wasWallJumping = false;
