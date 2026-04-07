@@ -753,8 +753,6 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 128
-  blinkIntervalMin: 3
-  blinkIntervalMax: 6
   startDirection: 0
 --- !u!1001 &78131857
 PrefabInstance:
@@ -853,8 +851,6 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 128
-  blinkIntervalMin: 3
-  blinkIntervalMax: 6
   startDirection: -1
 --- !u!1 &80954504
 GameObject:
@@ -7950,11 +7946,11 @@ PrefabInstance:
       objectReference: {fileID: 22100000, guid: 2f4935a511706ad4098f892d3f2519b0, type: 2}
     - target: {fileID: 3650547259938065877, guid: 63204f18a8e9c744983ce19934eea190, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -5
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 3650547259938065877, guid: 63204f18a8e9c744983ce19934eea190, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 3650547259938065877, guid: 63204f18a8e9c744983ce19934eea190, type: 3}
       propertyPath: m_LocalPosition.z
@@ -8037,8 +8033,6 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 128
-  blinkIntervalMin: 3
-  blinkIntervalMax: 6
   startDirection: 0
 --- !u!1001 &979538594
 PrefabInstance:
@@ -9092,11 +9086,11 @@ PrefabInstance:
       objectReference: {fileID: 22100000, guid: 2f4935a511706ad4098f892d3f2519b0, type: 2}
     - target: {fileID: 3650547259938065877, guid: 63204f18a8e9c744983ce19934eea190, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 10
+      value: -5
       objectReference: {fileID: 0}
     - target: {fileID: 3650547259938065877, guid: 63204f18a8e9c744983ce19934eea190, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4
+      value: -2
       objectReference: {fileID: 0}
     - target: {fileID: 3650547259938065877, guid: 63204f18a8e9c744983ce19934eea190, type: 3}
       propertyPath: m_LocalPosition.z
@@ -9179,8 +9173,6 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 128
-  blinkIntervalMin: 3
-  blinkIntervalMax: 6
   startDirection: 0
 --- !u!1 &1863627096
 GameObject:
