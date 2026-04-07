@@ -5146,11 +5146,16 @@ MonoBehaviour:
   sandLayer:
     serializedVersion: 2
     m_Bits: 2048
+  iceLayer:
+    serializedVersion: 2
+    m_Bits: 16384
   wallLayer:
     serializedVersion: 2
     m_Bits: 64
   wallOffsetX: 0.6
   wallCheckDistance: 0.05
+  iceSlideSprite: {fileID: -6367560908665664636, guid: 41e5fad0bbd56534aa2945e8f56a2c6b, type: 3}
+  iceIdleTimeBeforeSlide: 0.5
 --- !u!114 &6655690677131073235
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5205,7 +5210,7 @@ Transform:
   m_GameObject: {fileID: 3484963279786634896}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.115, y: -1.003, z: 0}
+  m_LocalPosition: {x: 0.085, y: -0.997, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
