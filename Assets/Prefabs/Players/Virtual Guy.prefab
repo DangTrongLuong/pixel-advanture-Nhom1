@@ -5146,12 +5146,16 @@ MonoBehaviour:
   sandLayer:
     serializedVersion: 2
     m_Bits: 2048
+  iceLayer:
+    serializedVersion: 2
+    m_Bits: 16384
   wallLayer:
     serializedVersion: 2
     m_Bits: 64
-  groundCheckRadius: 0.12
   wallOffsetX: 0.6
   wallCheckDistance: 0.05
+  iceSlideSprite: {fileID: -6367560908665664636, guid: 41e5fad0bbd56534aa2945e8f56a2c6b, type: 3}
+  iceIdleTimeBeforeSlide: 0.5
 --- !u!114 &6655690677131073235
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5164,10 +5168,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af591217bd340e64a876cb34e1336042, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCollision
-  detectionRadius: 0.5
-  itemLayer:
-    serializedVersion: 2
-    m_Bits: 1024
 --- !u!114 &-543097407500898366
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5184,6 +5184,7 @@ MonoBehaviour:
   bounceBackForce: 4
   flashDuration: 0.05
   flashCount: 1
+  reloadDelay: 1.5
 --- !u!1 &3484963279786634896
 GameObject:
   m_ObjectHideFlags: 0
@@ -5209,7 +5210,7 @@ Transform:
   m_GameObject: {fileID: 3484963279786634896}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.01, y: -1.003, z: 0}
+  m_LocalPosition: {x: 0.085, y: -0.997, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

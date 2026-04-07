@@ -56,6 +56,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5734733713284266578, guid: 2e3fde75e76b5d84f89a6c7ff0e73007, type: 3}
+      propertyPath: iceSlideSprite
+      value: 
+      objectReference: {fileID: -6367560908665664636, guid: 70f8aa9d456bddb42bb7666aa182e056, type: 3}
     - target: {fileID: 8156312257263290424, guid: 2e3fde75e76b5d84f89a6c7ff0e73007, type: 3}
       propertyPath: m_Controller
       value: 
