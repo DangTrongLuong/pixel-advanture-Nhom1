@@ -4,22 +4,16 @@ using System.Collections.Generic;
 public class PersistentPlayerManager : MonoBehaviour
 {
     public static PersistentPlayerManager instance;
-    private List<PlayerData> players = new List<PlayerData>();
-    private GameObject selectedPlayer;
 
-    [System.Serializable]
-    private class PlayerData
-    {
-        public GameObject obj;
-        public SpriteRenderer sr;
-        public Collider2D col;
-        public Rigidbody2D rb;
-        public PlayerController controller;
-    }
+    [Header("Players")]
+    [SerializeField] private List<GameObject> playerPrefabs = new List<GameObject>();
+
+    private GameObject selectedPrefab;
+
+    private GameObject currentInstance;
 
     private void Awake()
     {
-        // Singleton
         if (instance == null)
         {
             instance = this;
@@ -28,107 +22,52 @@ public class PersistentPlayerManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
-            return;
-        }
-        CachePlayers();
-    }
-
-    // -------------------------------------------------------------------------
-    private void CachePlayers()
-    {
-        GameObject[] foundPlayers = GameObject.FindGameObjectsWithTag("Player");
-        players.Clear();
-        foreach (var p in foundPlayers)
-        {
-            players.Add(new PlayerData
-            {
-                obj = p,
-                sr = p.GetComponent<SpriteRenderer>(),
-                col = p.GetComponent<Collider2D>(),
-                rb = p.GetComponent<Rigidbody2D>(),
-                controller = p.GetComponent<PlayerController>()
-            });
         }
     }
 
-    // -------------------------------------------------------------------------
     public void SelectRandomPlayer()
     {
-        if (players.Count == 0)
+        if (playerPrefabs == null || playerPrefabs.Count == 0)
         {
-            Debug.LogWarning("Không có player nào trong list!");
+            Debug.LogError("[PPM] Chưa gán prefab nào vào playerPrefabs!");
             return;
         }
 
-        int randomIndex = Random.Range(0, players.Count);
-        selectedPlayer = players[randomIndex].obj;
-
-        ApplyActiveState(randomIndex);
-
-        Debug.Log("Chọn player: " + selectedPlayer.name);
+        int index = Random.Range(0, playerPrefabs.Count);
+        selectedPrefab = playerPrefabs[index];
+        Debug.Log("[PPM] Đã chọn prefab: " + selectedPrefab.name);
     }
 
-    // -------------------------------------------------------------------------
-    private void ApplyActiveState(int activeIndex)
+    public void UpdatePlayersForNewScene()
     {
-        for (int i = 0; i < players.Count; i++)
+        if (selectedPrefab == null)
         {
-            bool active = (i == activeIndex);
-
-            if (players[i].sr) players[i].sr.enabled = active;
-            if (players[i].col) players[i].col.enabled = active;
-            if (players[i].rb)
-                players[i].rb.bodyType = active ? RigidbodyType2D.Dynamic : RigidbodyType2D.Kinematic;
-            if (players[i].controller) players[i].controller.enabled = active;
+            Debug.LogWarning("[PPM] Chưa có prefab nào được chọn, tự chọn ngẫu nhiên.");
+            SelectRandomPlayer();
+            if (selectedPrefab == null) return;
         }
+
+        GameObject spawnPointObj = GameObject.FindGameObjectWithTag("SpawnPoint");
+        Vector3 spawnPos = spawnPointObj != null
+            ? spawnPointObj.transform.position
+            : Vector3.zero;
+
+        if (currentInstance != null)
+            Destroy(currentInstance);
+
+        currentInstance = Instantiate(selectedPrefab, spawnPos, Quaternion.identity);
+        Debug.Log("[PPM] Đã spawn: " + currentInstance.name + " tại " + spawnPos);
     }
 
     public PlayerController GetSelectedController()
     {
-        if (selectedPlayer == null) return null;
-        var data = players.Find(p => p.obj == selectedPlayer);
-        return data?.controller;
-    }
-
-    // -------------------------------------------------------------------------
-    public GameObject GetSelectedPlayer()
-    {
-        return selectedPlayer;
+        if (currentInstance == null) return null;
+        return currentInstance.GetComponent<PlayerController>();
     }
 
     public void ResetSelection()
     {
-        selectedPlayer = null;
-        Debug.Log("Đã reset player selection → sẽ random lại sau khi scene load.");
-    }
-
-    // -------------------------------------------------------------------------
-    public void UpdatePlayersForNewScene()
-    {
-        CachePlayers();
-
-        if (selectedPlayer == null)
-        {
-            Debug.Log("Scene mới - chưa có player, random mới");
-            SelectRandomPlayer();
-            return;
-        }
-
-        PlayerData selectedData = players.Find(p => p.obj.name == selectedPlayer.name);
-
-        if (selectedData != null)
-        {
-            selectedPlayer = selectedData.obj;
-
-            int index = players.FindIndex(p => p.obj == selectedPlayer);
-            ApplyActiveState(index);
-
-            Debug.Log("Giữ nguyên player: " + selectedPlayer.name);
-        }
-        else
-        {
-            Debug.LogWarning("Không tìm thấy player đã chọn ở scene này, random player mới");
-            SelectRandomPlayer();
-        }
+        selectedPrefab = null;
+        currentInstance = null;
     }
 }

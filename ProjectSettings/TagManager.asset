@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Items
   - Traps
+  - SpawnPoint
   layers:
   - Default
   - TransparentFX
@@ -51,6 +52,9 @@ TagManager:
     locked: 0
   - name: Ground
     uniqueID: 3959453125
+    locked: 0
+  - name: Sand
+    uniqueID: 158089697
     locked: 0
   - name: Ice
     uniqueID: 2011798577

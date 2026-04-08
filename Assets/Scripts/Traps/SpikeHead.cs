@@ -179,7 +179,6 @@ public class SpikeHead : MonoBehaviour
 
     IEnumerator Bounce(Vector2 hitDirection)
     {
-        Debug.Log("🚀 Bounce STARTED (Spike)");
         isWaiting = true;
         rb.linearVelocity = Vector2.zero;
         rb.constraints = RigidbodyConstraints2D.FreezeAll;
@@ -187,31 +186,24 @@ public class SpikeHead : MonoBehaviour
         if (CameraShake.instance != null)
             CameraShake.instance.Shake(0.15f, 0.08f);
 
-        // Blink trước
         animator.speed = hitAnimSpeed;
         animator.SetTrigger("Blink");
-        Debug.Log("▶️ SetTrigger(Blink) called");
 
         yield return new WaitForSeconds(0.2f);
 
-        // Đổi hướng
         if (movementType == SpikeMovementType.Horizontal)
         {
             direction *= -1;
-            Debug.Log($"🔄 Direction changed to: {direction}");
         }
         else if (movementType == SpikeMovementType.Vertical)
         {
             direction *= -1;
-            Debug.Log($"🔄 Direction changed to: {direction}");
         }
         else
         {
             currentDirIndex = (currentDirIndex + 1) % 4;
-            Debug.Log($"🔄 Direction index changed to: {currentDirIndex}");
         }
 
-        // ✅ Dùng hitDirection (hướng lúc chạm tường) → animation luôn đúng
         string hitStateName = GetHitAnimFromDirection(hitDirection);
         animator.Play(hitStateName, 0, 0f);
         Debug.Log($"▶️ animator.Play('{hitStateName}') called (wall dir: {hitDirection})");
@@ -224,7 +216,6 @@ public class SpikeHead : MonoBehaviour
         rb.constraints = RigidbodyConstraints2D.FreezeRotation;
         hitCooldownTimer = 0.8f;
         isWaiting = false;
-        Debug.Log("✨ Bounce COMPLETE");
     }
 
     float GetClipLength(string clipName)

@@ -10,8 +10,6 @@ public class GameManager : MonoBehaviour
     {
         if (PersistentPlayerManager.instance == null)
         {
-            Debug.LogWarning("PersistentPlayerManager chưa tồn tại → Tự tạo mới (vì đang chạy scene Map trực tiếp).");
-
             GameObject go = new GameObject("PersistentPlayerManager");
             go.AddComponent<PersistentPlayerManager>();
         }
