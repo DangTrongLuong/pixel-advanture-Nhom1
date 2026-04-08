@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using System.Collections;
+using UnityEngine.InputSystem;
 
 public class PlayerMoveBtn : MonoBehaviour
 {
@@ -88,11 +90,20 @@ public class PlayerMoveBtn : MonoBehaviour
         for (int i = 0; i < Input.touchCount; i++)
         {
             Touch t = Input.GetTouch(i);
+
             switch (t.phase)
             {
-                case TouchPhase.Began: BeginContact(t.fingerId, t.position); break;
-                case TouchPhase.Moved: case TouchPhase.Stationary: MoveContact(t.fingerId, t.position); break;
-                case TouchPhase.Ended: case TouchPhase.Canceled: EndContact(t.fingerId); break;
+                case UnityEngine.TouchPhase.Began:
+                    BeginContact(t.fingerId, t.position);
+                    break;
+                case UnityEngine.TouchPhase.Moved:
+                case UnityEngine.TouchPhase.Stationary:
+                    MoveContact(t.fingerId, t.position);
+                    break;
+                case UnityEngine.TouchPhase.Ended:
+                case UnityEngine.TouchPhase.Canceled:
+                    EndContact(t.fingerId);
+                    break;
             }
         }
     }
@@ -100,11 +111,23 @@ public class PlayerMoveBtn : MonoBehaviour
     // ── MOUSE (editor / PC) ────────────────────
     void HandleMouse()
     {
-        if (Input.touchCount > 0) return;
+#if UNITY_EDITOR
+        if (Touchscreen.current != null && Touchscreen.current.touches.Count > 0) return;
 
-        if (Input.GetMouseButtonDown(0)) BeginContact(MOUSE_ID, Input.mousePosition);
-        if (Input.GetMouseButton(0)) MoveContact(MOUSE_ID, Input.mousePosition);
-        if (Input.GetMouseButtonUp(0)) EndContact(MOUSE_ID);
+        if (Mouse.current != null)
+        {
+            Vector2 mousePos = Mouse.current.position.ReadValue();
+
+            if (Mouse.current.leftButton.wasPressedThisFrame)
+                BeginContact(MOUSE_ID, mousePos);
+
+            if (Mouse.current.leftButton.isPressed)
+                MoveContact(MOUSE_ID, mousePos);
+
+            if (Mouse.current.leftButton.wasReleasedThisFrame)
+                EndContact(MOUSE_ID);
+        }
+#endif
     }
 
     // ── SHARED LOGIC ───────────────────────────

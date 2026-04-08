@@ -1,5 +1,6 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
@@ -145,12 +146,16 @@ public class PlayerController : MonoBehaviour
 
     private void ReadKeyboard()
     {
-        float h = Input.GetAxisRaw("Horizontal");
-        if (h == 0f)
+        float h = 0f;
+
+        if (Keyboard.current != null)
         {
-            if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) h = -1f;
-            if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) h = 1f;
+            if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed)
+                h = -1f;
+            else if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed)
+                h = 1f;
         }
+
         keyboardInput = h;
     }
 
@@ -443,9 +448,16 @@ public class PlayerController : MonoBehaviour
 
     private static bool JumpPressed()
     {
-        return Input.GetButtonDown("Jump")
-            || Input.GetKeyDown(KeyCode.UpArrow)
-            || Input.GetKeyDown(KeyCode.W);
+        if (Keyboard.current != null)
+        {
+            if (Keyboard.current.spaceKey.wasPressedThisFrame ||
+                Keyboard.current.wKey.wasPressedThisFrame ||
+                Keyboard.current.upArrowKey.wasPressedThisFrame)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void HandleWallSlide()
