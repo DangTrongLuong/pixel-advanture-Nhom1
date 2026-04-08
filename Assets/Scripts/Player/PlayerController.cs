@@ -11,21 +11,28 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private ParticleSystem jumpDust;
     [SerializeField] private ParticleSystem landDust;
 
+    [Header("Sand Dust Effects")]
+    [SerializeField] private ParticleSystem runDustSand;
+    [SerializeField] private ParticleSystem jumpDustSand;
+    [SerializeField] private ParticleSystem landDustSand;
+
     [Header("Collision Detection")]
     [SerializeField] private Transform groundCheck;
     [SerializeField] private Transform wallCheck;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private LayerMask sandLayer;
-    [SerializeField] private LayerMask iceLayer;       
+    [SerializeField] private LayerMask iceLayer;
     [SerializeField] private LayerMask wallLayer;
     [SerializeField] private float wallOffsetX = 0.12f;
-    [SerializeField] private float wallCheckDistance = 0.05f;
+    [SerializeField] private float wallCheckDistance = 0.02f;
+    [SerializeField] private float groundCheckRadius = 0.15f;
 
     [Header("Ice Slide")]
-    [SerializeField] private Sprite iceSlideSprite;    
-    [SerializeField] private float iceIdleTimeBeforeSlide = 0.5f; 
+    [SerializeField] private Sprite iceSlideSprite;
+    [SerializeField] private float iceIdleTimeBeforeSlide = 0.5f;
 
     private LayerMask trapLayer;
+    private LayerMask allGroundMask;
 
     static readonly int AnimRunning = Animator.StringToHash("isRunning");
     static readonly int AnimJumping = Animator.StringToHash("isJumping");
@@ -52,11 +59,15 @@ public class PlayerController : MonoBehaviour
     private bool isGrounded;
     private bool wasGrounded;
     private bool isOnSand;
+    private bool wasOnSand;
     private bool isOnIce;
+    private float iceGraceTimer;
+    private const float IceGrace = 0.1f;
+    private bool isOnSwamp;
     private bool isFallingFromGround;
 
     private float groundedGraceTimer;
-    private const float GroundedGrace = 0.08f;
+    private const float GroundedGrace = 0.12f;
 
     private bool isTouchingWall;
     private bool wasTouchingWall;
@@ -82,6 +93,7 @@ public class PlayerController : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         gameManager = FindAnyObjectByType<GameManager>();
         trapLayer = LayerMask.GetMask("Traps");
+        allGroundMask = groundLayer | sandLayer | iceLayer | trapLayer;
 
         if (spriteRenderer != null)
             originalSprite = spriteRenderer.sprite;
@@ -101,12 +113,17 @@ public class PlayerController : MonoBehaviour
         CheckIce();
         UpdateWallCheckPosition();
         CheckWall();
-        HandleIceSlide(); 
+        HandleIceSlide();
         HandleJump();
         HandleMovement();
         HandleWallSlide();
         UpdateAnimation();
         HandleDustEffects();
+    }
+
+    public void SetTerrain(TerrainZone.TerrainType type, bool isActive)
+    {
+        if (type == TerrainZone.TerrainType.Swamp) isOnSwamp = isActive;
     }
 
     public bool IsGrounded => isGrounded;
@@ -149,9 +166,8 @@ public class PlayerController : MonoBehaviour
     {
         wasGrounded = isGrounded;
 
-        bool physicsGrounded = Physics2D.OverlapBox(
-            groundCheck.position, new Vector2(1f, 0.1f), 0f,
-            groundLayer | sandLayer | iceLayer | trapLayer);
+        bool physicsGrounded = Physics2D.OverlapCircle(
+            groundCheck.position, groundCheckRadius, allGroundMask);
 
         if (physicsGrounded)
         {
@@ -169,7 +185,12 @@ public class PlayerController : MonoBehaviour
             wasWallJumping = false;
             isFallingFromGround = false;
             if (rb.linearVelocity.y <= 0.1f) jumpCount = 0;
-            if (!wasGrounded) animator.Play(AnimIdle);
+            if (!wasGrounded)
+            {
+                animator.Play(AnimIdle);
+                if (isOnSand) landDustSand.Play();
+                else landDust.Play();
+            }
         }
         else
         {
@@ -184,14 +205,32 @@ public class PlayerController : MonoBehaviour
 
     private void CheckSand()
     {
-        isOnSand = Physics2D.OverlapBox(
-            groundCheck.position, new Vector2(1f, 0.1f), 0f, sandLayer);
+        wasOnSand = isOnSand;
+        isOnSand = Physics2D.OverlapCircle(
+            groundCheck.position, groundCheckRadius, sandLayer);
     }
 
     private void CheckIce()
     {
-        isOnIce = Physics2D.OverlapBox(
-            groundCheck.position, new Vector2(1f, 0.1f), 0f, iceLayer);
+        bool physicsOnIce = Physics2D.OverlapCircle(
+            groundCheck.position, groundCheckRadius, iceLayer);
+
+        if (physicsOnIce)
+        {
+            iceGraceTimer = IceGrace;
+            isOnIce = true;
+        }
+        else
+        {
+            iceGraceTimer -= Time.deltaTime;
+            isOnIce = iceGraceTimer > 0f;
+        }
+
+        if (!isGrounded && groundedGraceTimer <= 0f)
+        {
+            iceGraceTimer = 0f;
+            isOnIce = false;
+        }
     }
 
     // ── ICE SLIDE LOGIC ──────────────────────────────────────────────────────
@@ -243,7 +282,7 @@ public class PlayerController : MonoBehaviour
 
     private void ExitIceSlide()
     {
-        if (iceState == IceState.None && spriteRenderer != null) return;
+        if (iceState == IceState.None) return;
         iceState = IceState.None;
         iceIdleTimer = 0f;
         SetIceSlideSprite(false);
@@ -265,7 +304,7 @@ public class PlayerController : MonoBehaviour
     {
         wallCheck.position = new Vector3(
             transform.position.x + wallOffsetX * transform.localScale.x,
-            transform.position.y,
+            transform.position.y + 0.3f,
             transform.position.z);
     }
 
@@ -274,16 +313,24 @@ public class PlayerController : MonoBehaviour
         wasTouchingWall = isTouchingWall;
         isTouchingWall = false;
 
+        if (isGrounded || groundedGraceTimer > 0f) return;
+
         Vector2 dir = new Vector2(transform.localScale.x, 0f);
+        LayerMask wallMask = (wallLayer | trapLayer) & ~sandLayer & ~groundLayer & ~iceLayer;
         RaycastHit2D hit = Physics2D.Raycast(
-            wallCheck.position, dir, wallCheckDistance, wallLayer | trapLayer);
+            wallCheck.position, dir, wallCheckDistance, wallMask);
 
         if (hit.collider != null)
         {
-            if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Traps"))
+            int hitLayer = hit.collider.gameObject.layer;
+            if (((1 << hitLayer) & (sandLayer | groundLayer | iceLayer)) != 0)
+                return;
+
+            if (hitLayer == LayerMask.NameToLayer("Traps"))
             {
                 float rotZ = hit.collider.transform.eulerAngles.z;
                 if (rotZ > 180f) rotZ -= 360f;
+
                 isTouchingWall = Mathf.Abs(rotZ - (-90f)) < 45f ||
                                  Mathf.Abs(rotZ - (-270f)) < 45f ||
                                  Mathf.Abs(rotZ - 90f) < 45f;
@@ -299,6 +346,8 @@ public class PlayerController : MonoBehaviour
             wasWallJumping = false;
             if (wasTouchingWall && !isGrounded) jumpCount = 0;
         }
+
+        Debug.DrawRay(wallCheck.position, dir * wallCheckDistance, Color.red);
     }
 
     private void HandleMovement()
@@ -311,18 +360,38 @@ public class PlayerController : MonoBehaviour
             rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
             return;
         }
-        if (wallJumpTimer > 0f) return;
+
+        if (wallJumpTimer > 0f && trulyAirborne) return;
+
         if (iceState == IceState.Sliding)
         {
             rb.linearVelocity = new Vector2(iceSlideDirection * config.moveSpeed, rb.linearVelocity.y);
             return;
         }
 
-        float speed = (isOnSand && isGrounded) ? config.sandSpeed : config.moveSpeed;
-        rb.linearVelocity = new Vector2(moveInput * speed, rb.linearVelocity.y);
+        float targetVelocityX;
 
-        if (moveInput > 0f) transform.localScale = Vector3.one;
-        else if (moveInput < 0f) transform.localScale = new Vector3(-1f, 1f, 1f);
+        if (isGrounded)
+        {
+            if (isOnSwamp)
+                targetVelocityX = 0f;
+            else if (isOnSand)
+                targetVelocityX = moveInput * config.sandSpeed;
+            else
+                targetVelocityX = moveInput * config.moveSpeed;
+        }
+        else
+        {
+            targetVelocityX = moveInput * config.moveSpeed;
+        }
+
+        rb.linearVelocity = new Vector2(targetVelocityX, rb.linearVelocity.y);
+
+        if (!isOnSwamp)
+        {
+            if (moveInput > 0f) transform.localScale = Vector3.one;
+            else if (moveInput < 0f) transform.localScale = new Vector3(-1f, 1f, 1f);
+        }
     }
 
     private void HandleJump()
@@ -361,6 +430,9 @@ public class PlayerController : MonoBehaviour
         jumpCount++;
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, config.jumpForce);
         animator.Play(jumpCount >= 2 ? AnimDblJump : AnimJump);
+
+        if (isOnSand) jumpDustSand.Play();
+        else jumpDust.Play();
     }
 
     private IEnumerator ResetWallJumpCooldown()
@@ -387,7 +459,6 @@ public class PlayerController : MonoBehaviour
     private void UpdateAnimation()
     {
         float vy = rb.linearVelocity.y;
-
         bool sliding = iceState == IceState.Sliding;
 
         animator.SetBool(AnimRunning, !sliding && Mathf.Abs(moveInput) > 0.1f && isGrounded);
@@ -400,19 +471,23 @@ public class PlayerController : MonoBehaviour
     private void HandleDustEffects()
     {
         bool shouldRunDust = isGrounded && Mathf.Abs(moveInput) > 0.1f && !IsIceSliding;
-        if (shouldRunDust) { if (!runDust.isPlaying) runDust.Play(); }
-        else runDust.Stop(true, ParticleSystemStopBehavior.StopEmitting);
-
-        if (wasGrounded && !isGrounded && rb.linearVelocity.y > 0f) jumpDust.Play();
-        if (!wasGrounded && isGrounded) landDust.Play();
+        if (isOnSand)
+        {
+            runDust.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+            if (shouldRunDust) { if (!runDustSand.isPlaying) runDustSand.Play(); }
+            else runDustSand.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+        }
+        else
+        {
+            runDustSand.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+            if (shouldRunDust) { if (!runDust.isPlaying) runDust.Play(); }
+            else runDust.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+        }
     }
 
     private void OnCollisionStay2D(Collision2D collision)
     {
-        if (collision.gameObject.GetComponent<RockHead>() != null ||
-            collision.gameObject.GetComponent<RockHeadVertical>() != null ||
-            collision.gameObject.GetComponent<RockHeadCircle>() != null ||
-            collision.gameObject.GetComponent<RockHeadCircleReverse>() != null)
+        if (collision.gameObject.GetComponent<RockHead>() != null)
         {
             foreach (ContactPoint2D contact in collision.contacts)
             {
@@ -443,6 +518,6 @@ public class PlayerController : MonoBehaviour
     {
         if (groundCheck == null) return;
         Gizmos.color = isGrounded ? Color.green : Color.red;
-        Gizmos.DrawWireCube(groundCheck.position, new Vector2(1f, 0.1f));
+        Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
     }
 }

@@ -7,9 +7,7 @@ public class LevelButton : MonoBehaviour
 
     public void LoadThisLevel()
     {
-        
         PersistentPlayerManager.instance.SelectRandomPlayer();
-
-        SceneManager.LoadScene(sceneName);
+        SceneManager.LoadScene(sceneName); 
     }
 }
