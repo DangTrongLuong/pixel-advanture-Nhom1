@@ -18,13 +18,6 @@ public class MenuBtn : MonoBehaviour
 
     private void Awake()
     {
-        if (FindFirstObjectByType<EventSystem>() == null)
-        {
-            Debug.LogWarning("[MenuBtn] Không có EventSystem → Tự tạo mới.");
-            GameObject es = new GameObject("EventSystem");
-            es.AddComponent<EventSystem>();
-            es.AddComponent<StandaloneInputModule>();
-        }
 
         Button[] allButtons = GetComponentsInChildren<Button>(includeInactive: true);
         foreach (Button btn in allButtons)
