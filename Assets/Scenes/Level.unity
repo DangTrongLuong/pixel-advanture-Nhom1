@@ -890,6 +890,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelButton
   sceneName: Map15
+  lockIcon: {fileID: 0}
+  button: {fileID: 0}
 --- !u!1 &822143870 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6323909498589503714, guid: b50280e2e0e33d94a802b850d1cf545e, type: 3}
@@ -1268,6 +1270,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelButton
   sceneName: Map14
+  lockIcon: {fileID: 0}
+  button: {fileID: 0}
 --- !u!1 &1087176626 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6323909498589503714, guid: b50280e2e0e33d94a802b850d1cf545e, type: 3}
@@ -1286,6 +1290,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelButton
   sceneName: Map5
+  lockIcon: {fileID: 0}
+  button: {fileID: 0}
 --- !u!1 &1115560124 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6323909498589503714, guid: b50280e2e0e33d94a802b850d1cf545e, type: 3}
@@ -1443,6 +1449,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelButton
   sceneName: Map3
+  lockIcon: {fileID: 0}
+  button: {fileID: 0}
 --- !u!1 &1163049149
 GameObject:
   m_ObjectHideFlags: 0
@@ -1709,6 +1717,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelButton
   sceneName: Map16
+  lockIcon: {fileID: 0}
+  button: {fileID: 0}
 --- !u!1001 &1280578913
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2000,6 +2010,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelButton
   sceneName: Map4
+  lockIcon: {fileID: 0}
+  button: {fileID: 0}
 --- !u!1 &1407466134 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6323909498589503714, guid: b50280e2e0e33d94a802b850d1cf545e, type: 3}
@@ -2018,6 +2030,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelButton
   sceneName: Map6
+  lockIcon: {fileID: 0}
+  button: {fileID: 0}
 --- !u!1 &1448670498 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6323909498589503714, guid: b50280e2e0e33d94a802b850d1cf545e, type: 3}
@@ -2322,6 +2336,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelButton
   sceneName: Map12
+  lockIcon: {fileID: 0}
+  button: {fileID: 0}
 --- !u!1 &1532056695
 GameObject:
   m_ObjectHideFlags: 0
@@ -2415,6 +2431,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelButton
   sceneName: Map11
+  lockIcon: {fileID: 0}
+  button: {fileID: 0}
 --- !u!1 &1550174480 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6323909498589503714, guid: b50280e2e0e33d94a802b850d1cf545e, type: 3}
@@ -2433,6 +2451,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelButton
   sceneName: Map8
+  lockIcon: {fileID: 0}
+  button: {fileID: 0}
 --- !u!1001 &1611771539
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2585,6 +2605,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelButton
   sceneName: Map10
+  lockIcon: {fileID: 0}
+  button: {fileID: 0}
 --- !u!1 &1818499865 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6323909498589503714, guid: b50280e2e0e33d94a802b850d1cf545e, type: 3}
@@ -2603,6 +2625,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelButton
   sceneName: Map13
+  lockIcon: {fileID: 0}
+  button: {fileID: 0}
 --- !u!1001 &1998288409
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2755,6 +2779,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelButton
   sceneName: Map9
+  lockIcon: {fileID: 0}
+  button: {fileID: 0}
 --- !u!1001 &2029723665
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2912,6 +2938,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelButton
   sceneName: Map17
+  lockIcon: {fileID: 0}
+  button: {fileID: 0}
 --- !u!1001 &2112733568
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3064,6 +3092,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelButton
   sceneName: Map7
+  lockIcon: {fileID: 0}
+  button: {fileID: 0}
 --- !u!1001 &2142636329
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3203,6 +3233,22 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6224207043769130074, guid: b50280e2e0e33d94a802b850d1cf545e, type: 3}
   m_PrefabInstance: {fileID: 2142636329}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2142636331 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1963536645730266047, guid: b50280e2e0e33d94a802b850d1cf545e, type: 3}
+  m_PrefabInstance: {fileID: 2142636329}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2142636332 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6907922772041534562, guid: b50280e2e0e33d94a802b850d1cf545e, type: 3}
+  m_PrefabInstance: {fileID: 2142636329}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1456364394}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
 --- !u!114 &2142636334
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3216,6 +3262,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelButton
   sceneName: Map2
+  lockIcon: {fileID: 2142636331}
+  button: {fileID: 2142636332}
 --- !u!1001 &7054908173796087818
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3374,6 +3422,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   sceneName: Map1
+  lockIcon: {fileID: 7054908173796087821}
+  button: {fileID: 7054908173796087822}
+--- !u!1 &7054908173796087821 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1963536645730266047, guid: b50280e2e0e33d94a802b850d1cf545e, type: 3}
+  m_PrefabInstance: {fileID: 7054908173796087818}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7054908173796087822 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6907922772041534562, guid: b50280e2e0e33d94a802b850d1cf545e, type: 3}
+  m_PrefabInstance: {fileID: 7054908173796087818}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1474398928}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

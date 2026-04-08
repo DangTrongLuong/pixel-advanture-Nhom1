@@ -18,7 +18,6 @@ public class MenuBtn : MonoBehaviour
 
     private void Awake()
     {
-
         if (FindFirstObjectByType<EventSystem>() == null)
         {
             Debug.LogWarning("[MenuBtn] Không có EventSystem → Tự tạo mới.");
@@ -55,48 +54,52 @@ public class MenuBtn : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-   public void OnNext()
-{
-    string currentScene = SceneManager.GetActiveScene().name;
-
-    if (currentScene == "Map17")
+    public void OnNext()
     {
-        SceneManager.LoadScene(WIN_SCENE);
-        return;
-    }
-    if (currentScene == WIN_SCENE)
-    {
-        SceneManager.LoadScene("Map1");
-        return;
-    }
+        string currentScene = SceneManager.GetActiveScene().name;
 
-    int current = GetCurrentMapIndex();
-    if (current == -1) return;
+        if (currentScene == "Map17")
+        {
+            SaveSystem.UnlockMap(MAP_MAX);
+            SceneManager.LoadScene(WIN_SCENE);
+            return;
+        }
 
-    SceneManager.LoadScene("Map" + (current + 1));
-}
+        if (currentScene == WIN_SCENE)
+        {
+            SceneManager.LoadScene("Map1");
+            return;
+        }
+
+        int current = GetCurrentMapIndex();
+        if (current == -1) return;
+
+        SaveSystem.UnlockMap(current + 1);
+
+        SceneManager.LoadScene("Map" + (current + 1));
+    }
 
     public void OnPrev()
-{
-    string currentScene = SceneManager.GetActiveScene().name;
-
-    if (currentScene == "Map1")
     {
-        SceneManager.LoadScene(WIN_SCENE);
-        return;
+        string currentScene = SceneManager.GetActiveScene().name;
+
+        if (currentScene == "Map1")
+        {
+            SceneManager.LoadScene(WIN_SCENE);
+            return;
+        }
+
+        if (currentScene == WIN_SCENE)
+        {
+            SceneManager.LoadScene("Map17");
+            return;
+        }
+
+        int current = GetCurrentMapIndex();
+        if (current == -1) return;
+
+        SceneManager.LoadScene("Map" + (current - 1));
     }
-
-    if (currentScene == WIN_SCENE)
-    {
-        SceneManager.LoadScene("Map17");
-        return;
-    }
-
-    int current = GetCurrentMapIndex();
-    if (current == -1) return;
-
-    SceneManager.LoadScene("Map" + (current - 1));
-}
 
     public void OnLevel()
     {
@@ -113,8 +116,8 @@ public class MenuBtn : MonoBehaviour
     private int GetCurrentMapIndex()
     {
         string sceneName = SceneManager.GetActiveScene().name;
-          if (sceneName == "Wingame")
-        return MAP_MAX;
+        if (sceneName == "WinGame")
+            return MAP_MAX;
         if (sceneName.StartsWith("Map") && int.TryParse(sceneName.Substring(3), out int index))
             return index;
         Debug.LogWarning("[MenuBtn] Scene không phải dạng MapX: " + sceneName);
