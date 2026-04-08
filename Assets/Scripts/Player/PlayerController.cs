@@ -16,9 +16,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform wallCheck;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private LayerMask sandLayer;
+    [SerializeField] private LayerMask iceLayer;       
     [SerializeField] private LayerMask wallLayer;
     [SerializeField] private float wallOffsetX = 0.12f;
     [SerializeField] private float wallCheckDistance = 0.05f;
+
+    [Header("Ice Slide")]
+    [SerializeField] private Sprite iceSlideSprite;    
+    [SerializeField] private float iceIdleTimeBeforeSlide = 0.5f; 
 
     private LayerMask trapLayer;
 
@@ -34,6 +39,7 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody2D rb;
     private Animator animator;
+    private SpriteRenderer spriteRenderer;
     private GameManager gameManager;
 
     private bool isDead = false;
@@ -46,10 +52,9 @@ public class PlayerController : MonoBehaviour
     private bool isGrounded;
     private bool wasGrounded;
     private bool isOnSand;
+    private bool isOnIce;
     private bool isFallingFromGround;
-    // FIX 1: Grace timer — keeps isGrounded = true for a short window when physics
-    // briefly loses contact at the ground→sand collider seam (1-2 frame gap).
-    // Without this, isTouchingWall + !isGrounded triggers wall-lock at the boundary.
+
     private float groundedGraceTimer;
     private const float GroundedGrace = 0.08f;
 
@@ -60,14 +65,26 @@ public class PlayerController : MonoBehaviour
     private int jumpCount;
     private float wallJumpTimer;
 
+    // ── ICE SLIDE STATE ──────────────────────────────────────────────────────
+    private enum IceState { None, WaitingToSlide, Sliding }
+    private IceState iceState = IceState.None;
+    private float iceIdleTimer = 0f;
+    private float iceSlideDirection = 1f;
+    private Sprite originalSprite;
+    // ─────────────────────────────────────────────────────────────────────────
+
     public System.Action<float> OnMoveInputChanged;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         gameManager = FindAnyObjectByType<GameManager>();
         trapLayer = LayerMask.GetMask("Traps");
+
+        if (spriteRenderer != null)
+            originalSprite = spriteRenderer.sprite;
     }
 
     private void Update()
@@ -81,8 +98,10 @@ public class PlayerController : MonoBehaviour
         ResolveMoveInput();
         CheckGround();
         CheckSand();
+        CheckIce();
         UpdateWallCheckPosition();
         CheckWall();
+        HandleIceSlide(); 
         HandleJump();
         HandleMovement();
         HandleWallSlide();
@@ -97,7 +116,8 @@ public class PlayerController : MonoBehaviour
 
     public void MobileJump()
     {
-        if (isTouchingWall && !isGrounded && canWallJump && !wasWallJumping)
+        bool trulyAirborne = !isGrounded && groundedGraceTimer <= 0f;
+        if (isTouchingWall && trulyAirborne && canWallJump && !wasWallJumping)
         {
             ExecuteWallJump();
             return;
@@ -131,8 +151,7 @@ public class PlayerController : MonoBehaviour
 
         bool physicsGrounded = Physics2D.OverlapBox(
             groundCheck.position, new Vector2(1f, 0.1f), 0f,
-            groundLayer | sandLayer | trapLayer);
-
+            groundLayer | sandLayer | iceLayer | trapLayer);
 
         if (physicsGrounded)
         {
@@ -169,6 +188,79 @@ public class PlayerController : MonoBehaviour
             groundCheck.position, new Vector2(1f, 0.1f), 0f, sandLayer);
     }
 
+    private void CheckIce()
+    {
+        isOnIce = Physics2D.OverlapBox(
+            groundCheck.position, new Vector2(1f, 0.1f), 0f, iceLayer);
+    }
+
+    // ── ICE SLIDE LOGIC ──────────────────────────────────────────────────────
+    private void HandleIceSlide()
+    {
+        if (!isOnIce || !isGrounded)
+        {
+            ExitIceSlide();
+            return;
+        }
+
+        bool playerMoving = Mathf.Abs(moveInput) > 0.1f;
+
+        switch (iceState)
+        {
+            case IceState.None:
+                if (!playerMoving)
+                {
+                    iceState = IceState.WaitingToSlide;
+                    iceIdleTimer = 0f;
+                }
+                break;
+
+            case IceState.WaitingToSlide:
+                if (playerMoving)
+                {
+                    iceState = IceState.None;
+                }
+                else
+                {
+                    iceIdleTimer += Time.deltaTime;
+                    if (iceIdleTimer >= iceIdleTimeBeforeSlide)
+                    {
+                        iceState = IceState.Sliding;
+                        iceSlideDirection = transform.localScale.x;
+                        SetIceSlideSprite(true);
+                    }
+                }
+                break;
+
+            case IceState.Sliding:
+                if (playerMoving)
+                {
+                    ExitIceSlide();
+                }
+                break;
+        }
+    }
+
+    private void ExitIceSlide()
+    {
+        if (iceState == IceState.None && spriteRenderer != null) return;
+        iceState = IceState.None;
+        iceIdleTimer = 0f;
+        SetIceSlideSprite(false);
+    }
+
+    private void SetIceSlideSprite(bool sliding)
+    {
+        if (spriteRenderer == null) return;
+        if (sliding && iceSlideSprite != null)
+            spriteRenderer.sprite = iceSlideSprite;
+        else
+            spriteRenderer.sprite = originalSprite;
+    }
+
+    public bool IsIceSliding => iceState == IceState.Sliding;
+    // ─────────────────────────────────────────────────────────────────────────
+
     private void UpdateWallCheckPosition()
     {
         wallCheck.position = new Vector3(
@@ -183,11 +275,8 @@ public class PlayerController : MonoBehaviour
         isTouchingWall = false;
 
         Vector2 dir = new Vector2(transform.localScale.x, 0f);
-        // FIX 2: sandLayer is intentionally excluded from this raycast.
-        // Sand collider edges were being detected as walls when entering the zone,
-        // causing isTouchingWall = true even while on the ground surface.
-        // Sand should never act as a wall — only wallLayer and trapLayer qualify.
-        RaycastHit2D hit = Physics2D.Raycast(wallCheck.position, dir, wallCheckDistance, wallLayer | trapLayer);
+        RaycastHit2D hit = Physics2D.Raycast(
+            wallCheck.position, dir, wallCheckDistance, wallLayer | trapLayer);
 
         if (hit.collider != null)
         {
@@ -214,13 +303,20 @@ public class PlayerController : MonoBehaviour
 
     private void HandleMovement()
     {
-        if (isTouchingWall && !isGrounded && moveInput != 0f
+        bool trulyAirborne = !isGrounded && groundedGraceTimer <= 0f;
+
+        if (isTouchingWall && trulyAirborne && moveInput != 0f
             && Mathf.Sign(moveInput) == transform.localScale.x)
         {
             rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
             return;
         }
         if (wallJumpTimer > 0f) return;
+        if (iceState == IceState.Sliding)
+        {
+            rb.linearVelocity = new Vector2(iceSlideDirection * config.moveSpeed, rb.linearVelocity.y);
+            return;
+        }
 
         float speed = (isOnSand && isGrounded) ? config.sandSpeed : config.moveSpeed;
         rb.linearVelocity = new Vector2(moveInput * speed, rb.linearVelocity.y);
@@ -233,7 +329,11 @@ public class PlayerController : MonoBehaviour
     {
         if (!JumpPressed()) return;
 
-        if (isTouchingWall && !isGrounded && canWallJump && !wasWallJumping)
+        bool trulyAirborne = !isGrounded && groundedGraceTimer <= 0f;
+
+        if (iceState == IceState.Sliding) ExitIceSlide();
+
+        if (isTouchingWall && trulyAirborne && canWallJump && !wasWallJumping)
         {
             ExecuteWallJump();
             return;
@@ -278,7 +378,8 @@ public class PlayerController : MonoBehaviour
 
     private void HandleWallSlide()
     {
-        if (!isTouchingWall || isGrounded || wasWallJumping) return;
+        bool trulyAirborne = !isGrounded && groundedGraceTimer <= 0f;
+        if (!isTouchingWall || !trulyAirborne || wasWallJumping) return;
         if (rb.linearVelocity.y < config.wallSlideSpeed)
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, config.wallSlideSpeed);
     }
@@ -286,7 +387,10 @@ public class PlayerController : MonoBehaviour
     private void UpdateAnimation()
     {
         float vy = rb.linearVelocity.y;
-        animator.SetBool(AnimRunning, Mathf.Abs(moveInput) > 0.1f && isGrounded);
+
+        bool sliding = iceState == IceState.Sliding;
+
+        animator.SetBool(AnimRunning, !sliding && Mathf.Abs(moveInput) > 0.1f && isGrounded);
         animator.SetBool(AnimJumping, vy > 0.1f && !isGrounded);
         animator.SetBool(AnimFalling, !isGrounded && (vy < -0.1f || isFallingFromGround));
         animator.SetBool(AnimWallSlide, isTouchingWall && !isGrounded);
@@ -295,7 +399,7 @@ public class PlayerController : MonoBehaviour
 
     private void HandleDustEffects()
     {
-        bool shouldRunDust = isGrounded && Mathf.Abs(moveInput) > 0.1f;
+        bool shouldRunDust = isGrounded && Mathf.Abs(moveInput) > 0.1f && !IsIceSliding;
         if (shouldRunDust) { if (!runDust.isPlaying) runDust.Play(); }
         else runDust.Stop(true, ParticleSystemStopBehavior.StopEmitting);
 
@@ -314,8 +418,10 @@ public class PlayerController : MonoBehaviour
             {
                 if (contact.normal.y > 0.5f)
                 {
-                    isGrounded = true; isFallingFromGround = false; wasWallJumping = false;
-                    groundedGraceTimer = GroundedGrace; 
+                    isGrounded = true;
+                    isFallingFromGround = false;
+                    wasWallJumping = false;
+                    groundedGraceTimer = GroundedGrace;
                     break;
                 }
             }
@@ -328,6 +434,7 @@ public class PlayerController : MonoBehaviour
         isDead = true;
         isHit = true;
 
+        ExitIceSlide();
         var deathHandler = GetComponent<PlayerDeathHandler>();
         if (deathHandler != null) deathHandler.Die(forceX, forceY);
     }

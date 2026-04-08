@@ -5146,11 +5146,16 @@ MonoBehaviour:
   sandLayer:
     serializedVersion: 2
     m_Bits: 2048
+  iceLayer:
+    serializedVersion: 2
+    m_Bits: 16384
   wallLayer:
     serializedVersion: 2
     m_Bits: 64
   wallOffsetX: 0.6
   wallCheckDistance: 0.05
+  iceSlideSprite: {fileID: -6367560908665664636, guid: 41e5fad0bbd56534aa2945e8f56a2c6b, type: 3}
+  iceIdleTimeBeforeSlide: 0.5
 --- !u!114 &6655690677131073235
 MonoBehaviour:
   m_ObjectHideFlags: 0
