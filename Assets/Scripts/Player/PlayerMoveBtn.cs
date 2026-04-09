@@ -1,8 +1,13 @@
 ﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.EnhancedTouch;
+using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
+using TouchPhase = UnityEngine.InputSystem.TouchPhase;
+
+
+
 
 public class PlayerMoveBtn : MonoBehaviour
 {
@@ -33,6 +38,7 @@ public class PlayerMoveBtn : MonoBehaviour
 
     void Awake()
     {
+       
         _canvas = GetComponentInParent<Canvas>();
         _circleOrigin = circle.anchoredPosition;
         _halfWidth = (sliderBackground.rect.width - circle.rect.width) * 0.5f;
@@ -48,31 +54,40 @@ public class PlayerMoveBtn : MonoBehaviour
     }
 
     IEnumerator InitController()
-    {
-        // Chờ 1 frame để GameManager.Start() và PersistentPlayerManager.UpdatePlayersForNewScene() chạy xong
-        yield return null;
-        yield return new WaitForFixedUpdate();
+{
+    float timeout = 3f;
+    float elapsed = 0f;
 
-        // Lấy đúng controller của player được chọn
+    while (elapsed < timeout)
+    {
         if (PersistentPlayerManager.instance != null)
             playerController = PersistentPlayerManager.instance.GetSelectedController();
 
-        // Fallback nếu không có PersistentPlayerManager
         if (playerController == null)
             playerController = FindAnyObjectByType<PlayerController>();
 
         if (playerController != null)
+        {
             playerController.OnMoveInputChanged += SyncCircleToInput;
+            Debug.Log("[PlayerMoveBtn] Tìm thấy playerController: " + playerController.name);
+            yield break; 
+        }
+
+        yield return new WaitForSeconds(0.1f);
+        elapsed += 0.1f;
     }
+
+    Debug.LogError("[PlayerMoveBtn] Không tìm thấy PlayerController sau " + timeout + "s!");
+}
 
     void OnEnable()
     {
-        // Không subscribe ở đây — controller chưa được set lúc OnEnable đầu chạy
-        // Subscribe được xử lý trong InitController
+         EnhancedTouchSupport.Enable();
     }
 
     void OnDisable()
     {
+        EnhancedTouchSupport.Disable();
         if (playerController != null)
             playerController.OnMoveInputChanged -= SyncCircleToInput;
     }
@@ -86,27 +101,29 @@ public class PlayerMoveBtn : MonoBehaviour
 
     // ── TOUCH ──────────────────────────────────
     void HandleTouches()
+{
+    foreach (var t in Touch.activeTouches)
     {
-        for (int i = 0; i < Input.touchCount; i++)
-        {
-            Touch t = Input.GetTouch(i);
+        switch (t.phase)
+{
+    case TouchPhase.Began:
+        BeginContact(t.finger.index, t.screenPosition);
+        break;
 
-            switch (t.phase)
-            {
-                case UnityEngine.TouchPhase.Began:
-                    BeginContact(t.fingerId, t.position);
-                    break;
-                case UnityEngine.TouchPhase.Moved:
-                case UnityEngine.TouchPhase.Stationary:
-                    MoveContact(t.fingerId, t.position);
-                    break;
-                case UnityEngine.TouchPhase.Ended:
-                case UnityEngine.TouchPhase.Canceled:
-                    EndContact(t.fingerId);
-                    break;
-            }
-        }
+    case TouchPhase.Moved:
+    case TouchPhase.Stationary:
+        MoveContact(t.finger.index, t.screenPosition);
+        break;
+
+    case TouchPhase.Ended:
+    case TouchPhase.Canceled:
+        EndContact(t.finger.index);
+        break;
+}
+
     }
+}
+
 
     // ── MOUSE (editor / PC) ────────────────────
     void HandleMouse()
@@ -198,7 +215,10 @@ public class PlayerMoveBtn : MonoBehaviour
         jumpButtonImage.sprite = playerController.IsGrounded ? jumpSprite1 : jumpSprite2;
     }
 
-    Camera GetCamera() =>
-        _canvas != null && _canvas.renderMode != RenderMode.ScreenSpaceOverlay
-            ? _canvas.worldCamera : null;
+    Camera GetCamera()
+{
+    if (_canvas == null) return null;
+    if (_canvas.renderMode == RenderMode.ScreenSpaceOverlay) return null;
+    return _canvas.worldCamera != null ? _canvas.worldCamera : Camera.main;
+}
 }
