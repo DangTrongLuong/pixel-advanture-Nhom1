@@ -326,7 +326,7 @@ GameObject:
   - component: {fileID: 570514997}
   - component: {fileID: 570514996}
   m_Layer: 5
-  m_Name: Button
+  m_Name: Rank
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -677,7 +677,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: MENU
+  m_text: 'RANK
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: caf40cd7bbe2f3744a60c1abd82fe418, type: 2}
   m_sharedMaterial: {fileID: -8120856903337705128, guid: caf40cd7bbe2f3744a60c1abd82fe418, type: 2}

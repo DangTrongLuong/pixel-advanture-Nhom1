@@ -5274,6 +5274,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   scoreText: {fileID: 862077880}
+  gameWinUI: {fileID: 0}
 --- !u!4 &1412316532
 Transform:
   m_ObjectHideFlags: 0
