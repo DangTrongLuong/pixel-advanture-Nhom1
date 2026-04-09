@@ -7,8 +7,6 @@ using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 using TouchPhase = UnityEngine.InputSystem.TouchPhase;
 
 
-
-
 public class PlayerMoveBtn : MonoBehaviour
 {
     [Header("Joystick")]

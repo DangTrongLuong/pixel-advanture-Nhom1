@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class PlayerDeathHandler : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class PlayerDeathHandler : MonoBehaviour
 
     [Header("Reload")]
     [SerializeField] private float reloadDelay = 1.5f;
+
 
     private Image flashImage;
     private Rigidbody2D rb;
@@ -36,6 +38,8 @@ public class PlayerDeathHandler : MonoBehaviour
             flashImage = flashObj.GetComponent<Image>();
         else
             Debug.LogWarning("Không tìm thấy DeathFlash trong Scene!");
+
+           
     }
 
     // ── Trigger từ va chạm ────────────────────
@@ -98,7 +102,20 @@ public class PlayerDeathHandler : MonoBehaviour
         yield return new WaitForSeconds(Mathf.Max(clipLength, reloadDelay));
 
         animator.enabled = false;
+        UIManager.instance?.ShowGameOver();
+
     }
+
+    public void OnPlayAgain()
+{
+    PersistentPlayerManager.instance?.ResetSelection();
+    SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+}
+
+public void OnLevel()
+{
+    SceneManager.LoadScene("Level");
+}
 
     private IEnumerator FlashScreen()
     {
